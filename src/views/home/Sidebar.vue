@@ -53,6 +53,7 @@
 import bus from '../../api/home/bus';
 import { getUserInfoAndMenus } from '@/api/home/home';
 import global from '@/utils/Global';
+import {setUserInfo} from '@/utils/auth';
 
 /**
  * 定义的参数数据值
@@ -71,7 +72,17 @@ let menuData =  {
 
 export default {
     data() {
-       return menuData;
+       return {
+           //测边栏是否展开
+           collapse: false,
+           //菜单信息
+           items: [{
+               icon:'el-icon-lx-home',
+               title:'我的主页',
+               index: 'dashboard',
+           }]
+       };
+        ;
     },
     computed: {
         onRoutes() {
@@ -89,11 +100,16 @@ export default {
         // 获取用户的菜单信息
         getUserInfoAndMenus().then(result => {
             if(result.code === global.SUCCESS){
+                //设置用户的基本信息到cookie中
+                const userInfo = result.data.sysUser;
+                setUserInfo(userInfo);
+
+                //获取用户的菜单信息
                 const menuInfo = result.data.sysMenu;
                 const childMenus = menuInfo.childMenus;
                 if(childMenus != undefined && childMenus.length > 0){
                     for(const i in childMenus){
-                        this.showMenus(menuData.items,childMenus[i]);
+                        this.showMenus(this.items,childMenus[i]);
                     }
                 }
             }else {

@@ -50,7 +50,7 @@
 </template>
 <script>
 import bus from '../../api/home/bus';
-import { logout } from "@/utils/auth";
+import { logout , getUserInfo } from "@/utils/auth";
 export default {
     data() {
         return {

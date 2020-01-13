@@ -31,6 +31,8 @@
 
 import {login} from '../api/login';
 import { setToken } from '../utils/auth';
+import global from "@/utils/Global";
+
 
 export default {
     data: function() {
@@ -52,7 +54,7 @@ export default {
                 console.info(this.user)
                 login(this.user).then(
                     result => {
-                        if(result.code === '10100'){
+                        if(result.code === global.SUCCESS){
                             var userInfo = result.data;
                             this.$message.success('登录成功');
                             localStorage.setItem('ms_username', userInfo.name);

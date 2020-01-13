@@ -1,6 +1,8 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'Login-Token'
+const TokenKey = 'Login-Token';
+
+const User_Info_Key = 'User-Info-Key';
 
 export function getToken() {
   return Cookies.get(TokenKey)
@@ -16,4 +18,18 @@ export function removeToken() {
 
 export function loginOut() {
   removeToken();
+  removeUserInfo();
+}
+
+
+
+export function setUserInfo(userInfo) {
+  return Cookies.set(User_Info_Key, userInfo)
+}
+
+export function getUserInfo() {
+  return Cookies.get(User_Info_Key)
+}
+export function removeUserInfo() {
+  return Cookies.remove(User_Info_Key)
 }
