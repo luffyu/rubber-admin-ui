@@ -20,6 +20,17 @@ export default new Router({
                     meta: { title: '我的主页' }
                 },
                 {
+                    path: '/sys/user-view',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/user/UserView'),
+                    meta: { title: '用户管理' }
+                },
+                {
+                    path: '/sys/role-view',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/role/RoleView'),
+                    meta: { title: '角色管理' }
+                },
+
+                {
                     path: '/dashboard',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
                     meta: { title: '系统首页' }
