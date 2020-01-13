@@ -55,21 +55,6 @@ import { getUserInfoAndMenus } from '@/api/home/home';
 import global from '@/utils/Global';
 import {setUserInfo} from '@/utils/auth';
 
-/**
- * 定义的参数数据值
- * @type {{items: [], collapse: boolean}}
- */
-let menuData =  {
-    //测边栏是否展开
-    collapse: false,
-    //菜单信息
-    items: [{
-        icon:'el-icon-lx-home',
-        title:'我的主页',
-        index: 'dashboard',
-    }]
-};
-
 export default {
     data() {
        return {
@@ -79,7 +64,7 @@ export default {
            items: [{
                icon:'el-icon-lx-home',
                title:'我的主页',
-               index: 'dashboard',
+               index: 'welcome',
            }]
        };
         ;
@@ -129,6 +114,7 @@ export default {
             const item = {};
             item.icon = 'el-icon-lx-global';
             item.title = menuInfo.menuName;
+            item.index = "";
             if(menuInfo.menuType === 'M'){
                 let subs = [];
                 const childMenus = menuInfo.childMenus;

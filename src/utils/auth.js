@@ -28,7 +28,8 @@ export function setUserInfo(userInfo) {
 }
 
 export function getUserInfo() {
-  return Cookies.get(User_Info_Key)
+  const userInfo = Cookies.get(User_Info_Key)
+  return JSON.parse(userInfo);
 }
 export function removeUserInfo() {
   return Cookies.remove(User_Info_Key)
