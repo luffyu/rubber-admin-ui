@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import bus from '../common/bus';
+import bus from '../../api/home/bus';
 export default {
     data() {
         return {
@@ -58,8 +58,25 @@ export default {
             items: [
                 {
                     icon: 'el-icon-lx-home',
+                    index: '0',
+                    title: '系统管理',
+                    subs: [
+                        {
+                            icon: 'el-icon-lx-home',
+                            index: 'form',
+                            title: '基本表单'
+                        },
+                        {
+                            icon: 'el-icon-lx-home',
+                            index: 'upload',
+                            title: '文件上传'
+                        }
+                    ]
+                },
+                {
+                    icon: 'el-icon-lx-home',
                     index: 'dashboard',
-                    title: '系统首页'
+                    title: '系统首页-ygf'
                 },
                 {
                     icon: 'el-icon-lx-cascades',

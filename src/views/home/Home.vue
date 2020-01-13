@@ -20,7 +20,8 @@
 import vHead from './Header.vue';
 import vSidebar from './Sidebar.vue';
 import vTags from './Tags.vue';
-import bus from './bus';
+import bus from '../../api/home/bus';
+import { getUserInfoAndMenus } from '../../api/home/home';
 export default {
     data() {
         return {
@@ -46,6 +47,10 @@ export default {
             }
             this.tagsList = arr;
         });
-    }
+        getUserInfoAndMenus().then(result => {
+            console.info(result);
+        })
+    },
+
 };
 </script>

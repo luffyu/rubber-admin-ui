@@ -1,17 +1,21 @@
 import axios from 'axios';
+import { getToken } from '../utils/auth'
 
-axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
+axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
+
 
 const service = axios.create({
     // process.env.NODE_ENV === 'development' 来判断是否开发环境
     // easy-mock服务挂了，暂时不使用了
-    baseURL: 'http://127.0.0.1:8081/rubber',
-    timeout: 10000
+    timeout: 10000,
 });
 
 service.interceptors.request.use(
     config => {
-        return config;
+      if(getToken()){
+        config.headers["Authorization"] = getToken();
+      }
+      return config;
     },
     error => {
         console.log(error);

@@ -1,4 +1,5 @@
-import request from '@/utils/request';
+import request from '../utils/request';
+import global from '../utils/Global';
 
 /**
  * 请求登陆接口
@@ -7,7 +8,7 @@ import request from '@/utils/request';
  */
 export function login(user) {
   return request({
-    url: '/login',
+    url: global.rubberBasePath + '/login',
     method: 'post',
     params: user
   })

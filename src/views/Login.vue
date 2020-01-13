@@ -29,8 +29,8 @@
 
 <script>
 
-import "@/api/login";
 import {login} from '../api/login';
+import { setToken } from '../utils/auth';
 
 export default {
     data: function() {
@@ -52,9 +52,11 @@ export default {
                 console.info(this.user)
                 login(this.user).then(
                     result => {
-                        if(result.code == 10100){
+                        if(result.code === '10100'){
+                            var userInfo = result.data;
                             this.$message.success('登录成功');
-                            localStorage.setItem('ms_username', this.user.account);
+                            localStorage.setItem('ms_username', userInfo.name);
+                            setToken(userInfo.token);
                             this.$router.push('/');
                         }else {
                             this.$message.error(result.msg);

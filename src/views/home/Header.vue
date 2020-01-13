@@ -49,7 +49,7 @@
     </div>
 </template>
 <script>
-import bus from '../common/bus';
+import bus from '../../api/home/bus';
 export default {
     data() {
         return {
