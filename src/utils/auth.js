@@ -14,3 +14,6 @@ export function removeToken() {
   return Cookies.remove(TokenKey)
 }
 
+export function loginOut() {
+  removeToken();
+}

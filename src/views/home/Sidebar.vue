@@ -51,136 +51,81 @@
 
 <script>
 import bus from '../../api/home/bus';
+import { getUserInfoAndMenus } from '@/api/home/home';
+import global from '@/utils/Global';
+
+/**
+ * 定义的参数数据值
+ * @type {{items: [], collapse: boolean}}
+ */
+let menuData =  {
+    //测边栏是否展开
+    collapse: false,
+    //菜单信息
+    items: [{
+        icon:'el-icon-lx-home',
+        title:'我的主页',
+        index: 'dashboard',
+    }]
+};
+
 export default {
     data() {
-        return {
-            collapse: false,
-            items: [
-                {
-                    icon: 'el-icon-lx-home',
-                    index: '0',
-                    title: '系统管理',
-                    subs: [
-                        {
-                            icon: 'el-icon-lx-home',
-                            index: 'form',
-                            title: '基本表单'
-                        },
-                        {
-                            icon: 'el-icon-lx-home',
-                            index: 'upload',
-                            title: '文件上传'
-                        }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-home',
-                    index: 'dashboard',
-                    title: '系统首页-ygf'
-                },
-                {
-                    icon: 'el-icon-lx-cascades',
-                    index: 'table',
-                    title: '基础表格'
-                },
-                {
-                    icon: 'el-icon-lx-copy',
-                    index: 'tabs',
-                    title: 'tab选项卡'
-                },
-                {
-                    icon: 'el-icon-lx-calendar',
-                    index: '3',
-                    title: '表单相关',
-                    subs: [
-                        {
-                            index: 'form',
-                            title: '基本表单'
-                        },
-                        {
-                            index: '3-2',
-                            title: '三级菜单',
-                            subs: [
-                                {
-                                    index: 'editor',
-                                    title: '富文本编辑器'
-                                },
-                                {
-                                    index: 'markdown',
-                                    title: 'markdown编辑器'
-                                }
-                            ]
-                        },
-                        {
-                            index: 'upload',
-                            title: '文件上传'
-                        }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-emoji',
-                    index: 'icon',
-                    title: '自定义图标'
-                },
-                {
-                    icon: 'el-icon-pie-chart',
-                    index: 'charts',
-                    title: 'schart图表'
-                },
-                {
-                    icon: 'el-icon-rank',
-                    index: '6',
-                    title: '拖拽组件',
-                    subs: [
-                        {
-                            index: 'drag',
-                            title: '拖拽列表'
-                        },
-                        {
-                            index: 'dialog',
-                            title: '拖拽弹框'
-                        }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-global',
-                    index: 'i18n',
-                    title: '国际化功能'
-                },
-                {
-                    icon: 'el-icon-lx-warn',
-                    index: '7',
-                    title: '错误处理',
-                    subs: [
-                        {
-                            index: 'permission',
-                            title: '权限测试'
-                        },
-                        {
-                            index: '404',
-                            title: '404页面'
-                        }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-redpacket_fill',
-                    index: '/donate',
-                    title: '支持作者'
-                }
-            ]
-        };
+       return menuData;
     },
     computed: {
         onRoutes() {
             return this.$route.path.replace('/', '');
         }
     },
+
     created() {
         // 通过 Event Bus 进行组件间通信，来折叠侧边栏
         bus.$on('collapse', msg => {
             this.collapse = msg;
             bus.$emit('collapse-content', msg);
         });
+
+        // 获取用户的菜单信息
+        getUserInfoAndMenus().then(result => {
+            if(result.code === global.SUCCESS){
+                const menuInfo = result.data.sysMenu;
+                const childMenus = menuInfo.childMenus;
+                if(childMenus != undefined && childMenus.length > 0){
+                    for(const i in childMenus){
+                        this.showMenus(menuData.items,childMenus[i]);
+                    }
+                }
+            }else {
+                this.$message.error(result.msg);
+            }
+        });
+    },
+
+    methods:{
+        /**
+         * 展示字目录
+         * @param items 根菜单信息
+         * @param menuInfo 当前的用户信息
+         * @returns {{}}
+         */
+        showMenus:function(items,menuInfo) {
+            const item = {};
+            item.icon = 'el-icon-lx-global';
+            item.title = menuInfo.menuName;
+            if(menuInfo.menuType === 'M'){
+                let subs = [];
+                const childMenus = menuInfo.childMenus;
+                for(const i in childMenus){
+                    this.showMenus(subs,childMenus[i]);
+                }
+                item.subs = subs;
+            }else {
+                item.index = menuInfo.url;
+            }
+            items.push(item);
+            return item;
+        }
     }
 };
 </script>
