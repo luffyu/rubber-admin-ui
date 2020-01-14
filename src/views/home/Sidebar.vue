@@ -10,38 +10,38 @@
             unique-opened
             router
         >
-            <template v-for="item in items">
-                <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
+            <template v-for="item in sysMenu">
+                <template v-if="item.childMenus && item.childMenus.length > 0 ">
+                    <el-submenu :index="item.url" :key="item.seq">
                         <template slot="title">
                             <i :class="item.icon"></i>
-                            <span slot="title">{{ item.title }}</span>
+                            <span slot="title">{{ item.menuName }}</span>
                         </template>
-                        <template v-for="subItem in item.subs">
+                        <template v-for="subItem in item.childMenus">
                             <el-submenu
-                                v-if="subItem.subs"
-                                :index="subItem.index"
-                                :key="subItem.index"
+                                v-if="subItem.childMenus && subItem.childMenus.length > 0"
+                                :index="subItem.url"
+                                :key="subItem.seq"
                             >
-                                <template slot="title">{{ subItem.title }}</template>
+                                <template slot="title">{{ subItem.menuName }}</template>
                                 <el-menu-item
-                                    v-for="(threeItem,i) in subItem.subs"
+                                    v-for="(threeItem,i) in subItem.childMenus"
                                     :key="i"
-                                    :index="threeItem.index"
-                                >{{ threeItem.title }}</el-menu-item>
+                                    :index="threeItem.url"
+                                >{{ threeItem.menuName }}</el-menu-item>
                             </el-submenu>
                             <el-menu-item
                                 v-else
-                                :index="subItem.index"
-                                :key="subItem.index"
-                            >{{ subItem.title }}</el-menu-item>
+                                :index="subItem.url"
+                                :key="subItem.seq"
+                            >{{ subItem.menuName }}</el-menu-item>
                         </template>
                     </el-submenu>
                 </template>
                 <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index">
+                    <el-menu-item :index="item.url" :key="item.seq">
                         <i :class="item.icon"></i>
-                        <span slot="title">{{ item.title }}</span>
+                        <span slot="title">{{ item.menuName }}</span>
                     </el-menu-item>
                 </template>
             </template>
@@ -55,19 +55,19 @@ import { getUserInfoAndMenus } from '@/api/home/home';
 import global from '@/utils/Global';
 import {setUserInfo} from '@/utils/auth';
 
+let index = 0;
 export default {
     data() {
        return {
            //测边栏是否展开
            collapse: false,
            //菜单信息
-           items: [{
+           sysMenu: [{
                icon:'el-icon-lx-home',
-               title:'我的主页',
-               index: 'welcome',
-           }]
+               menuName:'我的主页',
+               url: 'welcome',
+           }],
        };
-        ;
     },
     computed: {
         onRoutes() {
@@ -88,14 +88,14 @@ export default {
                 //设置用户的基本信息到cookie中
                 const userInfo = result.data.sysUser;
                 setUserInfo(userInfo);
-
                 //获取用户的菜单信息
                 const menuInfo = result.data.sysMenu;
+                //获取根目录的菜单信息
                 const childMenus = menuInfo.childMenus;
-                if(childMenus != undefined && childMenus.length > 0){
-                    for(const i in childMenus){
-                        this.showMenus(this.items,childMenus[i]);
-                    }
+                if(childMenus && childMenus.length > 0){
+                    childMenus.forEach((item) => {
+                        this.sysMenu.push(item);
+                    });
                 }
             }else {
                 this.$message.error(result.msg);
@@ -103,32 +103,6 @@ export default {
         });
     },
 
-    methods:{
-        /**
-         * 展示字目录
-         * @param items 根菜单信息
-         * @param menuInfo 当前的用户信息
-         * @returns {{}}
-         */
-        showMenus:function(items,menuInfo) {
-            const item = {};
-            item.icon = 'el-icon-lx-global';
-            item.title = menuInfo.menuName;
-            item.index = "";
-            if(menuInfo.menuType === 'M'){
-                let subs = [];
-                const childMenus = menuInfo.childMenus;
-                for(const i in childMenus){
-                    this.showMenus(subs,childMenus[i]);
-                }
-                item.subs = subs;
-            }else {
-                item.index = menuInfo.url;
-            }
-            items.push(item);
-            return item;
-        }
-    }
 };
 </script>
 
