@@ -60,7 +60,7 @@ export default {
     data() {
        return {
            //测边栏是否展开
-           collapse: false,
+           collapse: true,
            //菜单信息
            sysMenu: [{
                icon:'el-icon-lx-home',
@@ -111,7 +111,7 @@ export default {
     display: block;
     position: absolute;
     left: 0;
-    top: 70px;
+    top: 60px;
     bottom: 0;
     overflow-y: scroll;
 }
@@ -119,7 +119,7 @@ export default {
     width: 0;
 }
 .sidebar-el-menu:not(.el-menu--collapse) {
-    width: 250px;
+    width: 200px;
 }
 .sidebar > ul {
     height: 100%;
