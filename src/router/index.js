@@ -39,6 +39,11 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/menu/MenuView'),
                     meta: { title: '菜单管理' }
                 },
+                {
+                    path: '/sys/permission-dict-view',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/permission/PermissionDictView'),
+                    meta: { title: '权限字典' }
+                },
 
                 {
                     path: '/dashboard',
