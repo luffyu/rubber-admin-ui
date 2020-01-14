@@ -29,6 +29,16 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/role/RoleView'),
                     meta: { title: '角色管理' }
                 },
+                {
+                    path: '/sys/dept-view',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/dept/DeptView'),
+                    meta: { title: '部门管理' }
+                },
+                {
+                    path: '/sys/menu-view',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/menu/MenuView'),
+                    meta: { title: '菜单管理' }
+                },
 
                 {
                     path: '/dashboard',

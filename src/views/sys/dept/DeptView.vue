@@ -3,7 +3,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-lx-cascades"></i> 用户的基础数据
+          <i class="el-icon-lx-cascades"></i> 部门的基础数据
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -31,12 +31,11 @@
           @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="userId" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="loginAccount" label="登陆账户"></el-table-column>
-        <el-table-column prop="userName" label="用户名称"></el-table-column>
-        <el-table-column prop="loginIp" label="登陆IP"></el-table-column>
-        <el-table-column prop="loginCount" label="登陆次数"></el-table-column>
-        <el-table-column prop="loginTime" label="登陆时间"></el-table-column>
+        <el-table-column prop="deptId" label="ID" width="55" align="center"></el-table-column>
+        <el-table-column prop="deptName" label="部门名称"></el-table-column>
+        <el-table-column prop="leader" label="部门长"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="email" label="邮件"></el-table-column>
 
         <el-table-column prop="createBy" label="创建人"></el-table-column>
         <el-table-column prop="createTime" label="创建时间"></el-table-column>
@@ -100,7 +99,7 @@
 
 <script>
   import { fetchData } from '@/api/index';
-  import userRequest from '../../../api/sys/user';
+  import userRequest from '../../../api/sys/dept';
   import global from '../../../utils/Global';
   export default {
     name: 'basetable',

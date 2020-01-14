@@ -3,7 +3,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-lx-cascades"></i> 用户的基础数据
+          <i class="el-icon-lx-cascades"></i> 菜单的基础数据
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -31,12 +31,13 @@
           @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="userId" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="loginAccount" label="登陆账户"></el-table-column>
-        <el-table-column prop="userName" label="用户名称"></el-table-column>
-        <el-table-column prop="loginIp" label="登陆IP"></el-table-column>
-        <el-table-column prop="loginCount" label="登陆次数"></el-table-column>
-        <el-table-column prop="loginTime" label="登陆时间"></el-table-column>
+        <el-table-column prop="menuId" label="ID" width="55" align="center"></el-table-column>
+        <el-table-column prop="menuName" label="菜单名称"></el-table-column>
+        <el-table-column prop="parentId" label="父菜单名称"></el-table-column>
+        <el-table-column prop="seq" label="排序"></el-table-column>
+        <el-table-column prop="url" label="请求url"></el-table-column>
+        <el-table-column prop="menuType" label="类型"></el-table-column>
+        <el-table-column prop="icon" label="图标"></el-table-column>
 
         <el-table-column prop="createBy" label="创建人"></el-table-column>
         <el-table-column prop="createTime" label="创建时间"></el-table-column>
@@ -100,7 +101,7 @@
 
 <script>
   import { fetchData } from '@/api/index';
-  import userRequest from '../../../api/sys/user';
+  import userRequest from '../../../api/sys/menu';
   import global from '../../../utils/Global';
   export default {
     name: 'basetable',
