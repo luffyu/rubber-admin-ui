@@ -6,7 +6,9 @@ export  function queryList(query) {
   return request({
     url: global.rubberBasePath + '/sys/user/list',
     method: 'get',
-    params: query
+    params: {
+      'json':encodeURI(JSON.stringify(query))
+    }
   })
 }
 

@@ -31,30 +31,21 @@
           @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="name" label="用户名"></el-table-column>
-        <el-table-column label="账户余额">
-          <template slot-scope="scope">￥{{scope.row.money}}</template>
-        </el-table-column>
-        <el-table-column label="头像(查看大图)" align="center">
-          <template slot-scope="scope">
-            <el-image
-                class="table-td-thumb"
-                :src="scope.row.thumb"
-                :preview-src-list="[scope.row.thumb]"
-            ></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column prop="address" label="地址"></el-table-column>
+        <el-table-column prop="userId" label="ID" width="55" align="center"></el-table-column>
+        <el-table-column prop="loginAccount" label="登陆账户"></el-table-column>
+        <el-table-column prop="userName" label="用户名称"></el-table-column>
+        <el-table-column prop="loginIp" label="登陆IP"></el-table-column>
+        <el-table-column prop="loginCount" label="登陆次数"></el-table-column>
+        <el-table-column prop="loginTime" label="登陆时间"></el-table-column>
         <el-table-column label="状态" align="center">
+
           <template slot-scope="scope">
             <el-tag
-                :type="scope.row.state==='成功'?'success':(scope.row.state==='失败'?'danger':'')"
-            >{{scope.row.state}}</el-tag>
+                :type=" scope.row.state ==='0' ? 'success':'danger' "
+            >{{scope.row.status}}</el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="date" label="注册时间"></el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button
@@ -75,8 +66,8 @@
         <el-pagination
             background
             layout="total, prev, pager, next"
-            :current-page="query.pageIndex"
-            :page-size="query.pageSize"
+            :current-page="query.page"
+            :page-size="query.size"
             :total="pageTotal"
             @current-change="handlePageChange"
         ></el-pagination>
@@ -87,10 +78,10 @@
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" label-width="70px">
         <el-form-item label="用户名">
-          <el-input v-model="form.name"></el-input>
+          <el-input v-model="form.userName"></el-input>
         </el-form-item>
         <el-form-item label="地址">
-          <el-input v-model="form.address"></el-input>
+          <el-input v-model="form.userName"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -103,15 +94,16 @@
 
 <script>
   import { fetchData } from '@/api/index';
+  import userRequest from '../../../api/sys/user';
+  import global from '../../../utils/Global';
   export default {
     name: 'basetable',
     data() {
       return {
-        query: {
-          address: '',
-          name: '',
-          pageIndex: 1,
-          pageSize: 10
+        query:{
+          page:1,
+          size:10,
+          selectModels:[]
         },
         tableData: [],
         multipleSelection: [],
@@ -127,17 +119,24 @@
       this.getData();
     },
     methods: {
-      // 获取 easy-mock 的模拟数据
       getData() {
-        fetchData(this.query).then(res => {
-          console.log(res);
-          this.tableData = res.list;
-          this.pageTotal = res.pageTotal || 50;
-        });
+        //获取后台接口数据
+        userRequest.queryList(this.query).then(result => {
+          console.info(result);
+            if (global.SUCCESS === result.code){
+              const list =  result.data;
+              this.tableData = list.records;
+              console.info(this.tableData);
+              this.pageTotal = list.total;
+
+            }else {
+              this.$message.error(result.msg);
+            }
+        })
       },
       // 触发搜索按钮
       handleSearch() {
-        this.$set(this.query, 'pageIndex', 1);
+        this.$set(this.query, 'page', 1);
         this.getData();
       },
       // 删除操作
@@ -180,7 +179,7 @@
       },
       // 分页导航
       handlePageChange(val) {
-        this.$set(this.query, 'pageIndex', val);
+        this.$set(this.query, 'page', val);
         this.getData();
       }
     }

@@ -28,7 +28,6 @@ service.interceptors.response.use(
     response => {
         if (response.status === 200) {
             const result = response.data;
-            console.info("response>>>>>" + result.code);
             if(!global.checkLoginFlag(result.code)){
               MessageBox.confirm(
                   '登录状态异常'+result.msg,
