@@ -89,11 +89,10 @@ export default {
                 const userInfo = result.data.sysUser;
                 setUserInfo(userInfo);
                 //获取用户的菜单信息
-                const menuInfo = result.data.sysMenu;
+                const menuInfo = result.data.sysMenus;
                 //获取根目录的菜单信息
-                const childMenus = menuInfo.childMenus;
-                if(childMenus && childMenus.length > 0){
-                    childMenus.forEach((item) => {
+                if(menuInfo && menuInfo.length > 0){
+                    menuInfo.forEach((item) => {
                         this.sysMenu.push(item);
                     });
                 }
