@@ -52,6 +52,14 @@ a {
     border-radius: 5px;
 }
 
+.container-head {
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
 .crumbs {
     margin: 10px 0;
 }

@@ -1,55 +1,50 @@
 <template>
   <div>
-    <div class="crumbs">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <i class="el-icon-lx-cascades"></i> 菜单的基础数据
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
+    <el-form :inline="true" class="container-head ">
+          <div class="handle-box">
+            <el-input v-model="query.menuId" placeholder="菜单Id" class="handle-input mr10"></el-input>
+            <el-input v-model="query.menuName" placeholder="菜单名称" class="handle-input mr10"></el-input>
+            <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+          </div>
+    </el-form>
+
     <div class="container">
-      <div class="handle-box">
-        <el-button
-            type="primary"
-            icon="el-icon-delete"
-            class="handle-del mr10"
-            @click="delAllSelection"
-        >批量删除</el-button>
-        <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
-          <el-option key="1" label="广东省" value="广东省"></el-option>
-          <el-option key="2" label="湖南省" value="湖南省"></el-option>
-        </el-select>
-        <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-      </div>
       <el-table
           :data="tableData"
           border
           class="table"
+          row-key="menuId"
           ref="multipleTable"
           header-cell-class-name="table-header"
           @selection-change="handleSelectionChange"
+          :tree-props="{children: 'childMenus', hasChildren: 'hasChildMenus'}"
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="menuId" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="menuName" label="菜单名称"></el-table-column>
-        <el-table-column prop="parentId" label="父菜单名称"></el-table-column>
-        <el-table-column prop="seq" label="排序"></el-table-column>
-        <el-table-column prop="url" label="请求url"></el-table-column>
-        <el-table-column prop="menuType" label="类型"></el-table-column>
-        <el-table-column prop="icon" label="图标"></el-table-column>
+        <el-table-column label="菜单名称" width="150">
+          <template slot-scope="scope">
+            <i :class="scope.row.icon"></i>
+            {{scope.row.menuName}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="seq" label="排序" width="100" align="center"></el-table-column>
+        <el-table-column prop="url" label="请求url" width="400"></el-table-column>
 
-        <el-table-column prop="createBy" label="创建人"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateBy" label="创建人"></el-table-column>
-        <el-table-column prop="updateTime" label="创建时间"></el-table-column>
+        <el-table-column prop="menuType" label="类型" align="center">
+          <template slot-scope="scope">
+            <el-tag :type=" scope.row.menuType == 'M' ? 'success':'danger' ">
+              <span v-if = "scope.row.menuType == 'M' " >目录</span>
+              <span v-if = "scope.row.menuType == 'C' " >菜单</span>
+              <span v-if = "scope.row.menuType == 'B' " >按钮</span>
+            </el-tag>
+          </template>
+        </el-table-column>
 
         <el-table-column label="状态" align="center">
-
           <template slot-scope="scope">
-            <el-tag
-                :type=" scope.row.state ==='0' ? 'success':'danger' "
-            >{{scope.row.status}}</el-tag>
+            <el-tag :type=" scope.row.status == '0' ? 'success':'danger' ">
+              <span v-if = "scope.row.status == '0' " >正常</span>
+              <span  v-else>异常</span>
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -69,17 +64,8 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination">
-        <el-pagination
-            background
-            layout="total, prev, pager, next"
-            :current-page="query.page"
-            :page-size="query.size"
-            :total="pageTotal"
-            @current-change="handlePageChange"
-        ></el-pagination>
-      </div>
     </div>
+
 
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
@@ -92,9 +78,9 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
+           <el-button @click="editVisible = false">取 消</el-button>
+           <el-button type="primary" @click="saveEdit">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -108,9 +94,7 @@
     data() {
       return {
         query:{
-          page:1,
-          size:10,
-          selectModels:[]
+
         },
         tableData: [],
         multipleSelection: [],
@@ -128,11 +112,11 @@
     methods: {
       getData() {
         //获取后台接口数据
-        userRequest.queryList(this.query).then(result => {
+        userRequest.queryTree().then(result => {
           console.info(result);
             if (global.SUCCESS === result.code){
               const list =  result.data;
-              this.tableData = list.records;
+              this.tableData = list.childMenus;
               console.info(this.tableData);
               this.pageTotal = list.total;
 
@@ -143,9 +127,9 @@
       },
       // 触发搜索按钮
       handleSearch() {
-        this.$set(this.query, 'page', 1);
         this.getData();
       },
+
       // 删除操作
       handleDelete(index, row) {
         // 二次确认删除
@@ -158,6 +142,7 @@
             })
             .catch(() => {});
       },
+
       // 多选操作
       handleSelectionChange(val) {
         this.multipleSelection = val;
@@ -195,15 +180,14 @@
 
 <style scoped>
   .handle-box {
-    margin-bottom: 20px;
-  }
 
+  }
   .handle-select {
     width: 120px;
   }
 
   .handle-input {
-    width: 300px;
+    width: 150px;
     display: inline-block;
   }
   .table {

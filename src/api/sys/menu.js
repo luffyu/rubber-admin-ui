@@ -13,6 +13,15 @@ export  function queryList(query) {
 }
 
 
+export  function queryTree() {
+  return request({
+    url: global.rubberBasePath + '/sys/menu/tree',
+    method: 'get',
+  })
+}
+
+
 export default {
-  queryList
+  queryList,
+  queryTree
 }

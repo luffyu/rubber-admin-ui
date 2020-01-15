@@ -1,13 +1,6 @@
 <template>
   <div>
-    <div class="crumbs">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <i class="el-icon-lx-cascades"></i> 角色的基础数据
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-    <div class="container">
+    <el-form :inline="true" class="container-head ">
       <div class="handle-box">
         <el-button
             type="primary"
@@ -22,6 +15,10 @@
         <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
       </div>
+    </el-form>
+
+    <div class="container">
+
       <el-table
           :data="tableData"
           border
@@ -189,7 +186,7 @@
 
 <style scoped>
   .handle-box {
-    margin-bottom: 20px;
+
   }
 
   .handle-select {
