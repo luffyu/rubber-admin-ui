@@ -20,8 +20,46 @@ export  function queryTree() {
   })
 }
 
+/**
+ * 新增菜单
+ * @param params
+ */
+export  function add(params) {
+  return request({
+    url: global.rubberBasePath + '/sys/menu/add',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 编辑菜单
+ * @param params
+ */
+export  function edit(menuId,params) {
+  return request({
+    url: global.rubberBasePath + '/sys/menu/'+menuId+'/update',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 删除菜单
+ * @param menuId 菜单id
+ */
+export  function del(menuId) {
+  return request({
+    url: global.rubberBasePath + '/sys/menu/'+menuId+'/del',
+    method: 'post',
+
+  })
+}
 
 export default {
   queryList,
-  queryTree
+  queryTree,
+  add,
+  edit,
+  del
 }

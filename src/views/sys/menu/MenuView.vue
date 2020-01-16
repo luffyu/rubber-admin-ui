@@ -52,7 +52,15 @@
           <template slot-scope="scope">
             <el-button
                 type="text"
+                class="green"
+                icon="el-icon-lx-add"
+                @click="handleAdd(scope.$index, scope.row)"
+            >新增</el-button>
+
+            <el-button
+                type="text"
                 icon="el-icon-edit"
+                class="blue"
                 @click="handleEdit(scope.$index, scope.row)"
             >编辑</el-button>
             <el-button
@@ -66,20 +74,69 @@
       </el-table>
     </div>
 
-
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" label-width="70px">
-        <el-form-item label="用户名">
-          <el-input v-model="form.userName"></el-input>
+        <el-form-item label="菜单id" readonly: true>
+          <el-input v-model="form.menuId"></el-input>
         </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.userName"></el-input>
+
+        <el-form-item label="名称">
+          <el-input v-model="form.menuName"></el-input>
+        </el-form-item>
+
+        <el-form-item label="排序">
+          <el-input v-model="form.seq"></el-input>
+        </el-form-item>
+
+        <el-form-item label="类型">
+          <el-select v-model="form.menuType" placeholder="请选择类型" >
+             <el-option v-for='(item, index) in options' :key='index' :label='item.label' :value='item.value'></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="请求">
+          <el-input v-model="form.url" value="#"></el-input>
         </el-form-item>
       </el-form>
+
       <span slot="footer" class="dialog-footer">
            <el-button @click="editVisible = false">取 消</el-button>
            <el-button type="primary" @click="saveEdit">确 定</el-button>
+      </span>
+    </el-dialog>
+
+
+
+    <!-- 编辑弹出框 -->
+    <el-dialog title="新增" :visible.sync="addVisible" width="30%">
+      <el-form ref="form" :model="form" label-width="70px">
+        <el-form-item label="父菜单" readonly: true>
+          <el-input v-model="form.parentId"></el-input>
+        </el-form-item>
+
+        <el-form-item label="名称">
+          <el-input v-model="form.menuName"></el-input>
+        </el-form-item>
+
+        <el-form-item label="排序">
+          <el-input v-model="form.seq"></el-input>
+        </el-form-item>
+
+        <el-form-item label="类型">
+          <el-select v-model="form.menuType" placeholder="请选择类型">
+             <el-option v-for='(item, index) in options' :key='index' :label='item.label' :value='item.value'></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="请求">
+          <el-input v-model="form.url" value="#"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveAdd">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -96,14 +153,32 @@
         query:{
 
         },
+        form:{
+
+        },
         tableData: [],
         multipleSelection: [],
         delList: [],
         editVisible: false,
+        addVisible:false,
         pageTotal: 0,
-        form: {},
+
         idx: -1,
-        id: -1
+        id: -1,
+        options:[
+          {
+            label:"目录",
+            value:"M"
+          },
+          {
+            label:"菜单",
+            value:"C"
+          },
+          {
+            label:"按钮",
+            value:"B"
+          }
+        ]
       };
     },
     created() {
@@ -135,12 +210,16 @@
         // 二次确认删除
         this.$confirm('确定要删除吗？', '提示', {
           type: 'warning'
-        })
-            .then(() => {
-              this.$message.success('删除成功');
-              this.tableData.splice(index, 1);
-            })
-            .catch(() => {});
+        }).then(() => {
+              userRequest.del(row.menuId).then(result =>{
+                if(result.code === global.SUCCESS){
+                  this.$message.success(`删除成功`);
+                  this.getData();
+                }else {
+                  this.$message.error(result.msg);
+                }
+              })
+        }).catch(() => {});
       },
 
       // 多选操作
@@ -157,6 +236,28 @@
         this.$message.error(`删除了${str}`);
         this.multipleSelection = [];
       },
+
+      // 新增操作操作
+      handleAdd(index, row) {
+        this.idx = index;
+        this.form.parentId = row.menuId;
+        this.addVisible = true;
+      },
+
+      // 保存编辑
+      saveAdd() {
+        userRequest.add(this.form).then(result => {
+            if(result.code === global.SUCCESS){
+              this.addVisible = false;
+              this.$message.success(`添加成功`);
+              this.form={};
+              this.getData();
+            }else {
+              this.$message.error(result.msg);
+            }
+        })
+      },
+
       // 编辑操作
       handleEdit(index, row) {
         this.idx = index;
@@ -165,9 +266,16 @@
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
-        this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-        this.$set(this.tableData, this.idx, this.form);
+        userRequest.edit(this.form.menuId,this.form).then(result => {
+          if(result.code === global.SUCCESS){
+            this.editVisible = false;
+            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+            this.$set(this.tableData, this.idx, this.form);
+            this.form={}
+          }else {
+            this.$message.error(result.msg);
+          }
+        })
       },
       // 分页导航
       handlePageChange(val) {
@@ -194,9 +302,7 @@
     width: 100%;
     font-size: 14px;
   }
-  .red {
-    color: #ff0000;
-  }
+
   .mr10 {
     margin-right: 10px;
   }
@@ -206,4 +312,20 @@
     width: 40px;
     height: 40px;
   }
+
+  .red {
+    color: #ff3f19;
+  }
+
+  .green {
+    color: rgba(19, 192, 1, 0.85);
+  }
+
+  .origin {
+    color: #ffb527;
+  }
+  .blue{
+    color: #2442ff;
+  }
+
 </style>

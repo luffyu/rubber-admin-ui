@@ -28,16 +28,29 @@
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="userId" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="loginAccount" label="登陆账户"></el-table-column>
-        <el-table-column prop="userName" label="用户名称"></el-table-column>
-        <el-table-column prop="loginIp" label="登陆IP"></el-table-column>
-        <el-table-column prop="loginCount" label="登陆次数"></el-table-column>
-        <el-table-column prop="loginTime" label="登陆时间"></el-table-column>
+        <el-table-column prop="loginAccount" label="登陆账户" align="center"></el-table-column>
+        <el-table-column prop="userName" label="用户名称" align="center"></el-table-column>
+        <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
+        <el-table-column prop="phone" label="电话" align="center"></el-table-column>
+        <el-table-column label="头像(查看大图)" align="center">
+          <template slot-scope="scope">
+            <el-image
+                class="table-td-thumb"
+                :src="scope.row.thumb"
+                :preview-src-list="[scope.row.avatar]"
+            ></el-image>
+          </template>
+        </el-table-column>
 
-        <el-table-column prop="createBy" label="创建人"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateBy" label="创建人"></el-table-column>
-        <el-table-column prop="updateTime" label="创建时间"></el-table-column>
+
+        <el-table-column prop="loginIp" label="登陆IP" align="center"></el-table-column>
+        <el-table-column prop="loginCount" label="登陆次数" align="center"></el-table-column>
+        <el-table-column prop="loginTime" label="登陆时间" align="center"></el-table-column>
+
+        <el-table-column prop="createBy" label="创建人" align="center"></el-table-column>
+        <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+        <el-table-column prop="updateBy" label="创建人" align="center"></el-table-column>
+        <el-table-column prop="updateTime" label="创建时间" align="center"></el-table-column>
 
         <el-table-column label="状态" align="center">
 
@@ -79,11 +92,34 @@
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" label-width="70px">
-        <el-form-item label="用户名">
-          <el-input v-model="form.userName"></el-input>
+        <el-form-item label="用户id">
+          <el-input v-model="form.userId" type="hidden"></el-input>
         </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.userName"></el-input>
+        <el-form-item label="账户">
+          <el-input v-model="form.loginAccount"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="form.loginPwd"></el-input>
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input v-model="form.loginPwd"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="form.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="头像">
+          <el-input v-model="form.avatar"></el-input>
+        </el-form-item>
+
+        <el-form-item label="部门">
+          <el-input v-model="form.deptId"></el-input>
+        </el-form-item>
+
+        <el-form-item label="角色">
+          <el-input v-model="form.roleId"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -107,12 +143,13 @@
           size:10,
           selectModels:[]
         },
+        form: {},
         tableData: [],
         multipleSelection: [],
         delList: [],
         editVisible: false,
+        addVisible: false,
         pageTotal: 0,
-        form: {},
         idx: -1,
         id: -1
       };
@@ -146,12 +183,16 @@
         // 二次确认删除
         this.$confirm('确定要删除吗？', '提示', {
           type: 'warning'
-        })
-            .then(() => {
-              this.$message.success('删除成功');
-              this.tableData.splice(index, 1);
-            })
-            .catch(() => {});
+        }).then(() => {
+              userRequest.del(row.menuId).then(result =>{
+                if(result.code === global.SUCCESS){
+                  this.$message.success(`删除成功`);
+                  this.getData();
+                }else {
+                  this.$message.error(result.msg);
+                }
+              })
+         }).catch(() => {});
       },
       // 多选操作
       handleSelectionChange(val) {
@@ -167,6 +208,26 @@
         this.$message.error(`删除了${str}`);
         this.multipleSelection = [];
       },
+
+      // 编辑操作
+      handleAdd(index, row) {
+        this.idx = index;
+        this.form = row;
+        this.addVisible = true;
+      },
+      // 保存编辑
+      saveAdd() {
+        userRequest.add(this.form).then(result => {
+          if(result.code === global.SUCCESS){
+            this.addVisible = false;
+            this.$message.success(`添加成功`);
+            this.form={};
+            this.getData();
+          }else {
+            this.$message.error(result.msg);
+          }
+        })
+      },
       // 编辑操作
       handleEdit(index, row) {
         this.idx = index;
@@ -175,9 +236,16 @@
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
-        this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-        this.$set(this.tableData, this.idx, this.form);
+        userRequest.edit(this.form.userId,this.form).then(result => {
+          if(result.code === global.SUCCESS){
+            this.editVisible = false;
+            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+            this.$set(this.tableData, this.idx, this.form);
+            this.form={}
+          }else {
+            this.$message.error(result.msg);
+          }
+        })
       },
       // 分页导航
       handlePageChange(val) {
