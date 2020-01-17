@@ -16,7 +16,7 @@
         <el-button
             type="button"
             icon="el-icon-lx-add"
-            @click="addVisible = true"
+            @click="openAdd"
         >新增</el-button>
       </template>
 
@@ -51,13 +51,13 @@
             <el-button
                 type="text"
                 icon="el-icon-edit"
-                @click="handleEdit(scope.$index, scope.row)"
+                @click="openEdit(scope.$index, scope.row)"
             >编辑</el-button>
             <el-button
                 type="text"
                 icon="el-icon-delete"
                 class="button-text-red"
-                @click="handleDelete(scope.$index, scope.row)"
+                @click="handleDelete(scope.row.roleId, scope.row)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -70,7 +70,7 @@
             :current-page="query.page"
             :page-size="query.size"
             :total="pageTotal"
-            @current-change="handlePageChange"
+            @current-change="handlePageSearch"
         ></el-pagination>
       </div>
     </div>
@@ -78,6 +78,9 @@
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" label-width="70px">
+        <el-form-item label="角色Id">
+          <el-input v-model="form.roleId"></el-input>
+        </el-form-item>
         <el-form-item label="角色Key">
           <el-input v-model="form.roleKey"></el-input>
         </el-form-item>
@@ -96,8 +99,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button @click="closeEdit">取 消</el-button>
+                <el-button type="primary" @click="handleEdit(form.roleId)">确 定</el-button>
             </span>
     </el-dialog>
 
@@ -123,8 +126,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-                <el-button @click="addVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveAdd">确 定</el-button>
+                <el-button @click="closeAdd">取 消</el-button>
+                <el-button type="primary" @click="handleAdd">确 定</el-button>
             </span>
     </el-dialog>
 
@@ -132,126 +135,21 @@
 </template>
 
 <script>
-  import userRequest from '../../../api/sys/role';
-  import global from '../../../utils/Global';
+  import BaseList from '@/components/BaseCurd.vue';
+  import sysUrl from '@/api/sys/SysUrl';
   export default {
-    name: 'basetable',
+    extends: BaseList,
     data() {
-      return {
-        query:{
-          page:1,
-          size:10,
-          selectModels:[]
-        },
-        tableData: [],
-        multipleSelection: [],
-        delList: [],
-        editVisible: false,
-        addVisible: false,
-        pageTotal: 0,
-        form: {},
-        idx: -1,
-        id: -1
-      };
+      const data = BaseList.data();
+      data.url = sysUrl.allUrl.sysRole;
+      return data
     },
-    created() {
-      this.getData();
-    },
-    methods: {
-      getData() {
-        //获取后台接口数据
-        userRequest.queryList(this.query).then(result => {
-          console.info(result);
-            if (global.SUCCESS === result.code){
-              const list =  result.data;
-              this.tableData = list.records;
-              console.info(this.tableData);
-              this.pageTotal = list.total;
-
-            }else {
-              this.$message.error(result.msg);
-            }
-        })
-      },
-      // 触发搜索按钮
-      handleSearch() {
-        this.$set(this.query, 'page', 1);
-        this.getData();
-      },
-      // 删除操作
-      handleDelete(index, row) {
-        // 二次确认删除
-        this.$confirm('确定要删除吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-              userRequest.del(row.roleId).then(result =>{
-                if(result.code === global.SUCCESS){
-                  this.$message.success(`删除成功`);
-                  this.getData();
-                }else {
-                  this.$message.error(result.msg);
-                }
-              })
-       }).catch(() => {});
-      },
-      // 多选操作
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      delAllSelection() {
-        const length = this.multipleSelection.length;
-        let str = '';
-        this.delList = this.delList.concat(this.multipleSelection);
-        for (let i = 0; i < length; i++) {
-          str += this.multipleSelection[i].name + ' ';
-        }
-        this.$message.error(`删除了${str}`);
-        this.multipleSelection = [];
-      },
-
-
-      // 保存编辑
-      saveAdd() {
-        userRequest.add(this.form).then(result => {
-          if(result.code === global.SUCCESS){
-            this.addVisible = false;
-            this.$message.success(`添加成功`);
-            this.form={};
-            this.getData();
-          }else {
-            this.$message.error(result.msg);
-          }
-        })
-      },
-
-
-      // 编辑操作
-      handleEdit(index, row) {
-        this.idx = index;
-        this.form = row;
-        this.editVisible = true;
-      },
-      // 保存编辑
-      saveEdit() {
-        userRequest.edit(this.form.roleId,this.form).then(result => {
-          if(result.code === global.SUCCESS){
-            this.editVisible = false;
-            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            this.$set(this.tableData, this.idx, this.form);
-            this.form={}
-          }else {
-            this.$message.error(result.msg);
-          }
-        })
-      },
-      // 分页导航
-      handlePageChange(val) {
-        this.$set(this.query, 'page', val);
-        this.getData();
-      }
-    }
   };
 </script>
+
+
+
+
 
 <style scoped>
   .handle-box {
