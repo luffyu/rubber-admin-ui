@@ -2,12 +2,6 @@
   <div>
     <el-form :inline="true" class="container-head ">
       <div class="handle-box">
-        <el-button
-            type="primary"
-            icon="el-icon-delete"
-            class="handle-del mr10"
-            @click="delAllSelection"
-        >批量删除</el-button>
         <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
           <el-option key="1" label="广东省" value="广东省"></el-option>
           <el-option key="2" label="湖南省" value="湖南省"></el-option>
@@ -18,6 +12,13 @@
     </el-form>
 
     <div class="container">
+      <template class="container-head ">
+        <el-button
+            type="button"
+            icon="el-icon-lx-add"
+            @click="addVisible = true"
+        >新增</el-button>
+      </template>
 
       <el-table
           :data="tableData"
@@ -33,9 +34,9 @@
         <el-table-column prop="roleKey" label="角色Key值"></el-table-column>
         <el-table-column prop="seq" label="排序"></el-table-column>
         <el-table-column prop="createBy" label="创建人"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateBy" label="创建人"></el-table-column>
-        <el-table-column prop="updateTime" label="创建时间"></el-table-column>
+        <el-table-column prop="createTime" label="创建时间" width="150" ></el-table-column>
+        <el-table-column prop="updateBy" label="创建人"  ></el-table-column>
+        <el-table-column prop="updateTime" label="创建时间" width="150"></el-table-column>
 
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
@@ -55,12 +56,13 @@
             <el-button
                 type="text"
                 icon="el-icon-delete"
-                class="red"
+                class="button-text-red"
                 @click="handleDelete(scope.$index, scope.row)"
             >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+
       <div class="pagination">
         <el-pagination
             background
@@ -76,11 +78,21 @@
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" label-width="70px">
+        <el-form-item label="角色Key">
+          <el-input v-model="form.roleKey"></el-input>
+        </el-form-item>
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName"></el-input>
         </el-form-item>
         <el-form-item label="排序">
           <el-input v-model="form.seq"></el-input>
+        </el-form-item>
+
+        <el-form-item label="备注">
+          <el-input v-model="form.remark"></el-input>
+        </el-form-item>
+        <el-form-item label="权限">
+
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -88,6 +100,34 @@
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
     </el-dialog>
+
+
+    <!-- 编辑弹出框 -->
+    <el-dialog title="添加" :visible.sync="addVisible" width="30%">
+      <el-form ref="form" :model="form" label-width="70px">
+        <el-form-item label="角色Key">
+          <el-input v-model="form.roleKey"></el-input>
+        </el-form-item>
+        <el-form-item label="角色名称">
+          <el-input v-model="form.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input v-model="form.seq"></el-input>
+        </el-form-item>
+
+        <el-form-item label="备注">
+          <el-input v-model="form.remark"></el-input>
+        </el-form-item>
+        <el-form-item label="权限">
+
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveAdd">确 定</el-button>
+            </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -107,6 +147,7 @@
         multipleSelection: [],
         delList: [],
         editVisible: false,
+        addVisible: false,
         pageTotal: 0,
         form: {},
         idx: -1,
@@ -142,12 +183,16 @@
         // 二次确认删除
         this.$confirm('确定要删除吗？', '提示', {
           type: 'warning'
-        })
-            .then(() => {
-              this.$message.success('删除成功');
-              this.tableData.splice(index, 1);
-            })
-            .catch(() => {});
+        }).then(() => {
+              userRequest.del(row.roleId).then(result =>{
+                if(result.code === global.SUCCESS){
+                  this.$message.success(`删除成功`);
+                  this.getData();
+                }else {
+                  this.$message.error(result.msg);
+                }
+              })
+       }).catch(() => {});
       },
       // 多选操作
       handleSelectionChange(val) {
@@ -163,6 +208,23 @@
         this.$message.error(`删除了${str}`);
         this.multipleSelection = [];
       },
+
+
+      // 保存编辑
+      saveAdd() {
+        userRequest.add(this.form).then(result => {
+          if(result.code === global.SUCCESS){
+            this.addVisible = false;
+            this.$message.success(`添加成功`);
+            this.form={};
+            this.getData();
+          }else {
+            this.$message.error(result.msg);
+          }
+        })
+      },
+
+
       // 编辑操作
       handleEdit(index, row) {
         this.idx = index;
@@ -171,9 +233,16 @@
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
-        this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-        this.$set(this.tableData, this.idx, this.form);
+        userRequest.edit(this.form.roleId,this.form).then(result => {
+          if(result.code === global.SUCCESS){
+            this.editVisible = false;
+            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+            this.$set(this.tableData, this.idx, this.form);
+            this.form={}
+          }else {
+            this.$message.error(result.msg);
+          }
+        })
       },
       // 分页导航
       handlePageChange(val) {
@@ -200,9 +269,6 @@
   .table {
     width: 100%;
     font-size: 14px;
-  }
-  .red {
-    color: #ff0000;
   }
   .mr10 {
     margin-right: 10px;

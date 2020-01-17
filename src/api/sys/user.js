@@ -21,7 +21,9 @@ export  function add(params) {
   return request({
     url: global.rubberBasePath + '/sys/user/add',
     method: 'post',
-    data: params
+    data: {
+      sysUser:params
+    }
   })
 }
 
@@ -33,7 +35,9 @@ export  function edit(userId,params) {
   return request({
     url: global.rubberBasePath + '/sys/user/'+userId+'/update',
     method: 'post',
-    data: params
+    data: {
+      sysUser:params
+    }
   })
 }
 
@@ -51,5 +55,8 @@ export  function del(userId) {
 
 
 export default {
-  queryList
+  queryList,
+  add,
+  edit,
+  del
 }

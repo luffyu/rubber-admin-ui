@@ -65,6 +65,12 @@
           <template slot-scope="scope">
             <el-button
                 type="text"
+                icon="el-icon-lx-add"
+                @click="handleAdd(scope.$index, scope.row)"
+            >添加</el-button>
+
+            <el-button
+                type="text"
                 icon="el-icon-edit"
                 @click="handleEdit(scope.$index, scope.row)"
             >编辑</el-button>
@@ -93,7 +99,7 @@
     <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" label-width="70px">
         <el-form-item label="用户id">
-          <el-input v-model="form.userId" type="hidden"></el-input>
+          <el-input v-model="form.userId"></el-input>
         </el-form-item>
         <el-form-item label="账户">
           <el-input v-model="form.loginAccount"></el-input>
@@ -102,7 +108,7 @@
           <el-input v-model="form.loginPwd"></el-input>
         </el-form-item>
         <el-form-item label="名称">
-          <el-input v-model="form.loginPwd"></el-input>
+          <el-input v-model="form.userName"></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
           <el-input v-model="form.email"></el-input>
@@ -127,6 +133,44 @@
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
     </el-dialog>
+
+
+
+    <!-- 编辑弹出框 -->
+    <el-dialog title="添加" :visible.sync="addVisible" width="30%">
+      <el-form ref="form" :model="form" label-width="70px">
+        <el-form-item label="账户">
+          <el-input v-model="form.loginAccount"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="form.loginPwd"></el-input>
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input v-model="form.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="form.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="头像">
+          <el-input v-model="form.avatar"></el-input>
+        </el-form-item>
+
+        <el-form-item label="部门">
+          <el-input v-model="form.deptId"></el-input>
+        </el-form-item>
+
+        <el-form-item label="角色">
+          <el-input v-model="form.roleId"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveAdd">确 定</el-button>
+            </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -141,7 +185,13 @@
         query:{
           page:1,
           size:10,
-          selectModels:[]
+          selectModels:[
+            {
+              field:'status',
+              type:'eq',
+              data:0
+            }
+          ]
         },
         form: {},
         tableData: [],
@@ -167,7 +217,6 @@
               this.tableData = list.records;
               console.info(this.tableData);
               this.pageTotal = list.total;
-
             }else {
               this.$message.error(result.msg);
             }
@@ -184,7 +233,7 @@
         this.$confirm('确定要删除吗？', '提示', {
           type: 'warning'
         }).then(() => {
-              userRequest.del(row.menuId).then(result =>{
+              userRequest.del(row.userId).then(result =>{
                 if(result.code === global.SUCCESS){
                   this.$message.success(`删除成功`);
                   this.getData();
@@ -211,8 +260,7 @@
 
       // 编辑操作
       handleAdd(index, row) {
-        this.idx = index;
-        this.form = row;
+        this.form = {};
         this.addVisible = true;
       },
       // 保存编辑

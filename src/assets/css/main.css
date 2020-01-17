@@ -46,7 +46,7 @@ a {
 }
 
 .container {
-    padding: 30px;
+    padding: 10px;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -66,6 +66,15 @@ a {
 
 .el-table th {
     background-color: #f5f7fa !important;
+    word-break: break-word;
+    color: #515a6e;
+    height: 40px;
+    font-size: 11px !important;
+}
+
+.el-table td {
+    font-size: 11px !important;
+    height: 10px !important;
 }
 
 .pagination {
@@ -182,4 +191,8 @@ a {
 
 .v-note-wrapper .v-note-panel {
     min-height: 500px;
+}
+
+.button-text-red{
+    color: #ff0000;
 }
