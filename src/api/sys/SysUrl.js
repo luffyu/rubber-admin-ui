@@ -22,7 +22,7 @@ const allUrl = {
     del:"/sys/menu/%s/del",
   },
   sysDept:{
-    pageList:"/sys/dept/list",
+    pageList:"/sys/dept/tree",
     add:"/sys/dept/add",
     edit:"/sys/dept/%s/update",
     del:"/sys/dept/%s/del",

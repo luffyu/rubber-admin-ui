@@ -53,11 +53,8 @@ a {
 }
 
 .container-head {
-    padding: 10px;
-    background: #fff;
-    border: 1px solid #ddd;
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .crumbs {
@@ -196,3 +193,26 @@ a {
 .button-text-red{
     color: #ff0000;
 }
+
+
+/**
+ 增删改查的按钮颜色
+ */
+.el-button-add{
+
+}
+
+.el-button-edit{
+
+}
+
+.el-button-delete{
+
+}
+
+.el-button-fold{
+
+}
+
+
+

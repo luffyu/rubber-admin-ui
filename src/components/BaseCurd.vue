@@ -2,7 +2,11 @@
   import request from '@/utils/request';
   import global from '@/utils/Global';
   export default {
-    name: 'asetable',
+
+    /**
+     * ***************************************数据体***************************************************************
+     * 分页查询方法
+     */
     data() {
       return {
         //查询的字段信息
@@ -43,7 +47,10 @@
 
     // 方法结合
     methods: {
+
+
       /**
+       * ***************************************列表查询***************************************************************
        * 分页查询方法
        */
       getPageList() {
@@ -67,7 +74,26 @@
         this.tableData = list.records;
         this.pageTotal = list.total;
       },
+
       /**
+       * 搜索按钮查询
+       */
+      handleSearch() {
+        this.$set(this.query, 'page', 1);
+        this.getPageList();
+      },
+
+      /**
+       * 分页导航 查询
+       * @param val
+       */
+      handlePageSearch(val) {
+        this.$set(this.query, 'page', val);
+        this.getPageList();
+      },
+
+      /**
+       *  * ***************************************编辑操作***************************************************************
        * 打开编辑操作框
        * @param index 当前行数id
        * @param row 当前行数的数据
@@ -87,14 +113,14 @@
         this.rowIndex = -1;
       },
       /**
-       * 保存编辑的数据信息
+       * 保存编辑的数据方法
        */
       handleEdit(id) {
         const editUrl = this.url.edit.replace("%s",id);
         request({
           url: global.rubberBasePath + editUrl,
           method: 'post',
-          data: this.form
+          data: this.preHandleEdit(this.form)
         }).then(result => {
           if(result.code === global.SUCCESS){
             this.editVisible = false;
@@ -106,9 +132,19 @@
           }
         })
       },
+      /**
+       * 修改之前的操作
+       */
+      preHandleEdit(form){
+        return form;
+      },
+
+
+
 
 
       /**
+       * ***************************************新增操作***************************************************************
        * 打开新增框
        */
       openAdd() {
@@ -124,13 +160,13 @@
       },
 
       /**
-       * 保存添加的数据信息
+       * 保存添加的方法
        */
       handleAdd() {
         request({
           url: global.rubberBasePath + this.url.add,
           method: 'post',
-          data: this.form
+          data: this.preHandleAdd(this.form)
         }).then(result => {
           if(result.code === global.SUCCESS){
             this.addVisible = false;
@@ -142,8 +178,19 @@
           }
         })
       },
+      /**
+       * 添加之前的操作
+       */
+      preHandleAdd(form){
+        return form;
+      },
 
-      // 删除操作
+
+
+      /**
+       * ***************************************删除操作***************************************************************
+       * 删除操作
+       */
       handleDelete(id, row) {
         // 二次确认删除
         this.$confirm('确定要删除吗？', '提示', {
@@ -164,27 +211,21 @@
         }).catch(() => {});
       },
 
-      /**
-       * 搜索按钮查询
-       */
-      handleSearch() {
-        this.$set(this.query, 'page', 1);
-        this.getPageList();
-      },
-
-      /**
-       * 分页导航 查询
-       * @param val
-       */
-      handlePageSearch(val) {
-        this.$set(this.query, 'page', val);
-        this.getPageList();
-      },
-
       // 多选操作
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
+
+
+      normalShowStatus(status){
+        if (status === 0){
+          return '正常';
+        }else if(status < 0){
+          return "停用";
+        }else {
+          return "-"
+        }
+      }
     },
 
     render(){

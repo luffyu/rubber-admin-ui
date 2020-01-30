@@ -11,34 +11,58 @@
       </div>
     </el-form>
 
+
     <div class="container">
+      <div class="container-head ">
+        <el-button
+            type="button"
+            icon="el-icon-lx-add"
+            class="el-button-add"
+            @click="openAdd"
+        >新增</el-button>
+
+        <el-button
+            type="button"
+            icon="el-icon-lx-edit"
+            class="el-button-edit"
+            @click="openAdd"
+        >修改</el-button>
+
+        <el-button
+            type="button"
+            icon="el-icon-lx-delete"
+            class="el-button-delete"
+            @click="openAdd"
+        >删除</el-button>
+
+        <el-button
+            type="button"
+            icon="el-icon-lx-exchange"
+            class="el-button-fold"
+            @click="collapseAll()"
+        >展开/折叠</el-button>
+      </div>
 
       <el-table
           :data="tableData"
           border
           class="table"
+          row-key="deptId"
           ref="multipleTable"
           header-cell-class-name="table-header"
           @selection-change="handleSelectionChange"
+          @row-click="handleRowClick"
+          :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="deptId" label="ID" width="55" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门名称"></el-table-column>
-        <el-table-column prop="leader" label="部门长"></el-table-column>
+        <el-table-column prop="leader" label="负责人"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
         <el-table-column prop="email" label="邮件"></el-table-column>
-
-        <el-table-column prop="createBy" label="创建人"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateBy" label="创建人"></el-table-column>
-        <el-table-column prop="updateTime" label="创建时间"></el-table-column>
-
         <el-table-column label="状态" align="center">
-
           <template slot-scope="scope">
-            <el-tag
-                :type=" scope.row.state ==='0' ? 'success':'danger' "
-            >{{scope.row.status}}</el-tag>
+            <el-tag :type=" scope.row.status == '0' ? 'success':'danger' ">
+              <span >{{ normalShowStatus(scope.row.status) }}</span>
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -88,6 +112,45 @@
                 <el-button type="primary" @click="saveEdit(form.deptId)">确 定</el-button>
             </span>
     </el-dialog>
+
+
+    <!-- 添加或修改部门对话框 -->
+    <el-dialog title="新增" :visible.sync="addVisible" width="40%">
+      <el-form ref="form" :model="form"  label-width="80px">
+          <el-form-item label="上级部门" prop="parentId">
+
+          </el-form-item>
+
+          <el-form-item label="部门名称" prop="deptName">
+            <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+          </el-form-item>
+
+          <el-form-item label="显示排序" prop="orderNum">
+            <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+          </el-form-item>
+
+          <el-form-item label="负责人" prop="leader">
+            <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+          </el-form-item>
+
+          <el-form-item label="联系电话" prop="phone">
+            <el-input v-model="form.phone" placeholder="请输入联系电话" maxlength="11" />
+          </el-form-item>
+
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+          </el-form-item>
+
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" >确 定</el-button>
+        <el-button >取 消</el-button>
+      </div>
+    </el-dialog>
+
+
+
   </div>
 </template>
 
@@ -101,6 +164,25 @@
       data.url = sysUrl.allUrl.sysDept;
       return data
     },
+    methods: {
+      handleAfterPageList(result) {
+        this.tableData = result.data;
+      },
+      // 多选操作
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+        if(this.multipleSelection >= 1){
+          this.$refs.multipleTable.clearSelection();
+          this.$refs.multipleTable.toggleRowSelection(val.pop());
+        }else {
+          this.multipleSelection = val.pop();
+        }
+      },
+      handleRowClick(row,column,event){
+        this.$refs.multipleTable.toggleRowSelection(row)
+      }
+    }
+
   };
 </script>
 

@@ -13,6 +13,16 @@
     </el-form>
 
     <div class="container">
+
+      <template class="container-head ">
+        <el-button
+            type="button"
+            icon="el-icon-lx-add"
+            @click="openAdd"
+        >新增</el-button>
+      </template>
+
+
       <el-table
           :data="tableData"
           border
@@ -27,7 +37,7 @@
         <el-table-column prop="userName" label="用户名称" align="center"></el-table-column>
         <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
         <el-table-column prop="phone" label="电话" align="center"></el-table-column>
-        <el-table-column label="头像(查看大图)" align="center">
+        <el-table-column label="头像" align="center">
           <template slot-scope="scope">
             <el-image
                 class="table-td-thumb"
@@ -42,17 +52,17 @@
         <el-table-column prop="loginCount" label="登陆次数" align="center"></el-table-column>
         <el-table-column prop="loginTime" label="登陆时间" align="center"></el-table-column>
 
-        <el-table-column prop="createBy" label="创建人" align="center"></el-table-column>
+
         <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
-        <el-table-column prop="updateBy" label="创建人" align="center"></el-table-column>
-        <el-table-column prop="updateTime" label="创建时间" align="center"></el-table-column>
+
 
         <el-table-column label="状态" align="center">
 
           <template slot-scope="scope">
-            <el-tag
-                :type=" scope.row.state ==='0' ? 'success':'danger' "
-            >{{scope.row.status}}</el-tag>
+            <el-tag :type=" scope.row.status == '0' ? 'success':'danger' ">
+              <span v-if = "scope.row.status == '0' " >正常</span>
+              <span  v-else>异常</span>
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -172,8 +182,6 @@
 <script>
   import BaseList from '@/components/BaseCurd.vue';
   import sysUrl from '@/api/sys/SysUrl';
-  import request from '@/utils/request';
-  import global from '@/utils/Global';
 
   export default {
     extends: BaseList,
@@ -188,25 +196,16 @@
      */
     methods: {
 
-      handleEdit(id) {
-        const editUrl = this.url.edit.replace("%s", id);
-        request({
-          url: global.rubberBasePath + editUrl,
-          method: 'post',
-          data: {
-            sysUser: this.form
-          }
-        }).then(result => {
-          if (result.code === global.SUCCESS) {
-            this.editVisible = false;
-            this.$message.success(`修改第 ${this.rowIndex + 1} 行成功`);
-            this.form = {};
-            this.getPageList();
-          } else {
-            this.$message.error(result.msg);
-          }
-        })
-      }
+      /**
+       * 重写编辑之前的操作
+       * @param form
+       * @returns {{sysUser: *}}
+       */
+      preHandleEdit(form){
+        return {
+          sysUser: form
+        };
+      },
     }
   };
 </script>
