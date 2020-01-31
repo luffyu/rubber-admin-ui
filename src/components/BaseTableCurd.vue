@@ -9,6 +9,8 @@
      */
     data() {
       return {
+        //分页总数
+        pageTotal: 0,
         //查询的字段信息
         query:{
           page:1,
@@ -17,15 +19,18 @@
         },
         //表格的基本信息
         tableData: [],
-        //编辑model是否显示
-        editVisible: false,
-        //新增model是否显示
-        addVisible: false,
+
+        //编辑和新增是否显示
+        addEditVisible:false,
+        //默认是编辑类型
+        addEditType:'',
+        //操作标题
+        addEditTitle:'',
+
         //表单提交的数据信息
         form:{},
 
-        //分页总数
-        pageTotal: 0,
+        //执行的url
         url:{
           pageList:"",
           add:"",
@@ -40,7 +45,24 @@
         radioSelection:{},
         //选中的删除的行id
         delList: [],
-        id: -1,
+        // 表单校验
+        rules:{
+          email: [
+            {
+              type: "email",
+              message: "'请输入正确的邮箱地址",
+              trigger: ["blur", "change"]
+            }
+          ],
+          phone: [
+            {
+              pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+              message: "请输入正确的手机号码",
+              trigger: "blur"
+            }
+          ]
+        }
+
       };
     },
 
@@ -51,8 +73,6 @@
 
     // 方法结合
     methods: {
-
-
       /**
        * ***************************************列表查询***************************************************************
        * 分页查询方法
@@ -73,6 +93,9 @@
           }
         })
       },
+      /**
+       * 处理消息返回体
+       */
       handleAfterPageList(result){
         const list =  result.data;
         this.tableData = list.records;
@@ -80,7 +103,7 @@
       },
 
       /**
-       * 搜索按钮查询
+       * 搜索按钮点击事件
        */
       handleSearch() {
         this.$set(this.query, 'page', 1);
@@ -88,12 +111,35 @@
       },
 
       /**
-       * 分页导航 查询
+       * 分页导航 查询事件
        * @param val
        */
       handlePageSearch(val) {
         this.$set(this.query, 'page', val);
         this.getPageList();
+      },
+
+
+      /**
+       * 新增编辑操作
+       */
+      handleAddEdit(id) {
+        if(this.addEditType === 'add'){
+          this.handleAdd();
+        }else if(this.addEditType === 'edit'){
+          this.handleEdit(id);
+        }
+      },
+
+      /**
+       * 关闭编辑操作框
+       */
+      closeAddEdit() {
+        this.addEditVisible = false;
+        this.addEditType = '';
+        this.addEditTitle = '';
+        this.form = {};
+        this.rowIndex = -1;
       },
 
       /**
@@ -105,22 +151,24 @@
       openEdit(index, row) {
         this.rowIndex = index;
         this.form = row;
-        this.editVisible = true;
-      },
+        this.radioSelection = row;
 
-      openEditByRadio() {
-          this.form = this.radioSelection;
-          this.addVisible = true;
+        this.addEditVisible = true;
+        this.addEditType = 'edit';
+        this.addEditTitle = '编辑';
       },
 
       /**
-       * 关闭编辑操作框
+       * 编辑选中的数据信息
        */
-      closeEdit() {
-        this.editVisible = false;
-        this.form = {};
-        this.rowIndex = -1;
+      openEditByRadio() {
+        this.form = this.radioSelection;
+        this.addEditVisible = true;
+        this.addEditType = 'edit';
+        this.addEditTitle = '编辑';
       },
+
+
       /**
        * 保存编辑的数据方法
        */
@@ -132,9 +180,8 @@
           data: this.preHandleEdit(this.form)
         }).then(result => {
           if(result.code === global.SUCCESS){
-            this.editVisible = false;
-            this.$message.success(`修改第 ${this.rowIndex + 1} 行成功`);
-            this.form={};
+            this.$message.success(`修改成功`);
+            this.closeAddEdit();
             this.getPageList();
           }else {
             this.$message.error(result.msg);
@@ -149,23 +196,14 @@
       },
 
 
-
-
-
       /**
        * ***************************************新增操作***************************************************************
        * 打开新增框
        */
       openAdd() {
-        this.addVisible = true;
-      },
-
-      /**
-       * 关闭新增框
-       */
-      closeAdd() {
-        this.addVisible = false;
-        this.form = {};
+        this.addEditVisible = true;
+        this.addEditType = 'add';
+        this.addEditTitle = '新增';
       },
 
       /**
@@ -178,9 +216,8 @@
           data: this.preHandleAdd(this.form)
         }).then(result => {
           if(result.code === global.SUCCESS){
-            this.addVisible = false;
             this.$message.success(`新增数据成功`);
-            this.form={};
+            this.closeAddEdit();
             this.getPageList();
           }else {
             this.$message.error(result.msg);
@@ -212,6 +249,7 @@
           }).then(result =>{
             if(result.code === global.SUCCESS){
               this.$message.success(`删除成功`);
+              this.closeAddEdit();
               this.getPageList();
             }else {
               this.$message.error(result.msg);
@@ -226,7 +264,6 @@
        */
       handleSelectionChange(val) {
         this.multipleSelection = val;
-        this.radioSelection = val[0];
       },
 
 

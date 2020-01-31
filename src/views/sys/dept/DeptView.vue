@@ -25,7 +25,7 @@
             type="button"
             icon="el-icon-lx-edit"
             class="el-button-edit"
-            @click="openAdd"
+            @click="openEditByRadio"
         >修改</el-button>
 
         <el-button
@@ -49,11 +49,14 @@
           class="table"
           row-key="deptId"
           ref="multipleTable"
+          highlight-current-row
           header-cell-class-name="table-header"
-          @selection-change="handleSelectionChange"
-          @row-click="handleRowClick"
+          @select="select"
+          @row-click="rowClick"
+          @selection-change="radioSelectionChange"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
+        <el-table-column type="selection" ref="selectKey" width="55" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门名称"></el-table-column>
         <el-table-column prop="leader" label="负责人"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
@@ -77,7 +80,7 @@
                 type="text"
                 icon="el-icon-delete"
                 class="red"
-                @click="handleDelete(scope.$index, scope.row)"
+                @click="handleDelete(scope.row.deptId, scope.row)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -94,39 +97,21 @@
       </div>
     </div>
 
-    <!-- 编辑弹出框 -->
-    <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-      <el-form ref="form" :model="form" label-width="70px">
-        <el-form-item label="部门id">
-          <el-input v-model="form.deptId"></el-input>
-        </el-form-item>
-        <el-form-item label="用户名">
-          <el-input v-model="form.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.userName"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-                <el-button @click="closeEdit">取 消</el-button>
-                <el-button type="primary" @click="saveEdit(form.deptId)">确 定</el-button>
-            </span>
-    </el-dialog>
-
 
     <!-- 添加或修改部门对话框 -->
-    <el-dialog title="新增" :visible.sync="addVisible" width="40%">
-      <el-form ref="form" :model="form"  label-width="80px">
-          <el-form-item label="上级部门" prop="parentId">
+    <el-dialog :title="addEditTitle" :visible.sync="addEditVisible" :before-close='closeAddEdit' width="40%">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
 
+          <el-form-item label="上级部门" prop="parentId">
+            <treeselect v-model="form.parentId" :multiple="false" :options="tableData" :normalizer="normalizer" />
           </el-form-item>
 
           <el-form-item label="部门名称" prop="deptName">
             <el-input v-model="form.deptName" placeholder="请输入部门名称" />
           </el-form-item>
 
-          <el-form-item label="显示排序" prop="orderNum">
-            <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+          <el-form-item label="显示排序" prop="seq">
+            <el-input-number v-model="form.seq" controls-position="right" :min="0" />
           </el-form-item>
 
           <el-form-item label="负责人" prop="leader">
@@ -140,25 +125,25 @@
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
           </el-form-item>
-
-
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" >确 定</el-button>
-        <el-button >取 消</el-button>
+        <el-button @click="closeAddEdit">取 消</el-button>
+        <el-button type="primary" @click="handleAddEdit(form.deptId)">确 定</el-button>
       </div>
     </el-dialog>
-
-
 
   </div>
 </template>
 
 <script>
-  import BaseList from '@/components/BaseCurd.vue';
+  import BaseList from '@/components/BaseTableCurd.vue';
   import sysUrl from '@/api/sys/SysUrl';
+  import Treeselect from "@riophae/vue-treeselect";
+  import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+
   export default {
     extends: BaseList,
+    components: { Treeselect },
     data() {
       const data = BaseList.data();
       data.url = sysUrl.allUrl.sysDept;
@@ -168,21 +153,16 @@
       handleAfterPageList(result) {
         this.tableData = result.data;
       },
-      // 多选操作
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-        if(this.multipleSelection >= 1){
-          this.$refs.multipleTable.clearSelection();
-          this.$refs.multipleTable.toggleRowSelection(val.pop());
-        }else {
-          this.multipleSelection = val.pop();
+
+      //selecttree 自定义属性名称
+      normalizer(node) {
+        return {
+          id: node.deptId,
+          label: node.deptName,
+          children: node.children,
         }
       },
-      handleRowClick(row,column,event){
-        this.$refs.multipleTable.toggleRowSelection(row)
-      }
     }
-
   };
 </script>
 
