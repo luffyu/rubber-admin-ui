@@ -138,12 +138,9 @@
 <script>
   import BaseList from '@/components/BaseTableCurd.vue';
   import sysUrl from '@/api/sys/SysUrl';
-  import Treeselect from "@riophae/vue-treeselect";
-  import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
   export default {
     extends: BaseList,
-    components: { Treeselect },
     data() {
       const data = BaseList.data();
       data.url = sysUrl.allUrl.sysDept;

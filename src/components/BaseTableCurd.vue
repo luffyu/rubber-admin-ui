@@ -1,8 +1,12 @@
 <script>
   import request from '@/utils/request';
   import global from '@/utils/Global';
-  export default {
+  import sysUrl from '@/api/sys/SysUrl';
+  import Treeselect from "@riophae/vue-treeselect";
+  import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
+  export default {
+    components: { Treeselect },
     /**
      * ***************************************数据体***************************************************************
      * 分页查询方法
@@ -100,6 +104,7 @@
         const list =  result.data;
         this.tableData = list.records;
         this.pageTotal = list.total;
+        this.treeList = this.tableData;
       },
 
       /**

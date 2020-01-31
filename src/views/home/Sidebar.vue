@@ -11,21 +11,21 @@
             router
         >
             <template v-for="item in sysMenu">
-                <template v-if="item.childMenus && item.childMenus.length > 0 ">
+                <template v-if="item.children && item.children.length > 0 ">
                     <el-submenu :index="item.url" :key="item.seq">
                         <template slot="title">
                             <i :class="item.icon"></i>
                             <span slot="title">{{ item.menuName }}</span>
                         </template>
-                        <template v-for="subItem in item.childMenus">
+                        <template v-for="subItem in item.children">
                             <el-submenu
-                                v-if="subItem.childMenus && subItem.childMenus.length > 0"
+                                v-if="subItem.children && subItem.children.length > 0"
                                 :index="subItem.url"
                                 :key="subItem.seq"
                             >
                                 <template slot="title">{{ subItem.menuName }}</template>
                                 <el-menu-item
-                                    v-for="(threeItem,i) in subItem.childMenus"
+                                    v-for="(threeItem,i) in subItem.children"
                                     :key="i"
                                     :index="threeItem.url"
                                 >{{ threeItem.menuName }}</el-menu-item>
