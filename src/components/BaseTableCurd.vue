@@ -65,7 +65,17 @@
               trigger: "blur"
             }
           ]
-        }
+        },
+        statusOptions:[
+          {
+            dictValue:0,
+            dictLabel:'正常'
+          },
+          {
+            dictValue:-1,
+            dictLabel:'停用'
+          }
+        ]
 
       };
     },
@@ -167,10 +177,7 @@
        * 编辑选中的数据信息
        */
       openEditByRadio() {
-        this.form = this.radioSelection;
-        this.addEditVisible = true;
-        this.addEditType = 'edit';
-        this.addEditTitle = '编辑';
+        this.openEdit(0,this.radioSelection);
       },
 
 
@@ -182,7 +189,7 @@
         request({
           url: global.rubberBasePath + editUrl,
           method: 'post',
-          data: this.preHandleEdit(this.form)
+          data: this.preHandleSave(this.form)
         }).then(result => {
           if(result.code === global.SUCCESS){
             this.$message.success(`修改成功`);
@@ -193,12 +200,7 @@
           }
         })
       },
-      /**
-       * 修改之前的操作
-       */
-      preHandleEdit(form){
-        return form;
-      },
+
 
 
       /**
@@ -218,7 +220,7 @@
         request({
           url: global.rubberBasePath + this.url.add,
           method: 'post',
-          data: this.preHandleAdd(this.form)
+          data: this.preHandleSave(this.form)
         }).then(result => {
           if(result.code === global.SUCCESS){
             this.$message.success(`新增数据成功`);
@@ -232,7 +234,7 @@
       /**
        * 添加之前的操作
        */
-      preHandleAdd(form){
+      preHandleSave(form){
         return form;
       },
 

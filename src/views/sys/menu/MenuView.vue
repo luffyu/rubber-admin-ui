@@ -77,8 +77,7 @@
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
             <el-tag :type=" scope.row.status == '0' ? 'success':'danger' ">
-              <span v-if = "scope.row.status == '0' " >正常</span>
-              <span  v-else>异常</span>
+              <span >{{ normalShowStatus(scope.row.status) }}</span>
             </el-tag>
           </template>
         </el-table-column>
@@ -177,16 +176,6 @@
           value:"B"
         }
       ];
-      data.statusOptions = [
-        {
-          dictValue:0,
-          dictLabel:'正常'
-        },
-        {
-          dictValue:-1,
-          dictLabel:'异常'
-        }
-      ]
       return data
     },
 
