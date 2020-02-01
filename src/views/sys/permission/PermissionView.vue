@@ -1,43 +1,49 @@
 <template>
-  <div >
 
-      <template v-for="(v,k) in permissionList">
-          <template v-if = "v.unitKey">
-              <div ><span>{{ k }}</span> <span>{{ v.name }}</span> <span>{{ v.linkKey }}</span></div>
 
-            <template v-for="(uv,uk) in v.unitKey">
-                <div ><span>{{ uk }}</span> <span>{{ uv.name }}</span> <span>{{ uv.linkKey }}</span></div>
-            </template>
+  <div class="container">
 
-          </template>
-          <template v-else>
-            <div ><span>{{ k }}</span> <span>{{ v.name }}</span> <span>{{ v.linkKey }}</span></div>
-          </template>
-      </template>
+
+    <el-table
+        :data="tableData"
+        border
+        class="table"
+        row-key="key"
+        ref="multipleTable"
+        highlight-current-row
+        header-cell-class-name="table-header"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    >
+      <el-table-column type="selection" ref="selectKey" width="55" align="center"></el-table-column>
+
+      <el-table-column prop="key" label="权限key"  ></el-table-column>
+      <el-table-column prop="name" label="权限名称" ></el-table-column>
+      <el-table-column prop="linkKey" label="关联的值" ></el-table-column>
+    </el-table>
 
   </div>
+
 </template>
 
 
 <script>
-  import request from '../../../api/sys/permission';
+  import BaseList from '@/components/BaseTableCurd.vue';
+  import sysUrl from '@/api/sys/SysUrl';
+
   export default {
-    data(){
-      return {
-        permissionList: {}
-      }
+    extends: BaseList,
+    data() {
+      const data = BaseList.data();
+      data.url = sysUrl.allUrl.sysPermission;
+      return data
     },
-    created() {
-      this.getData();
-    },
-    methods: {
-        getData(){
-          request.queryList().then(result => {
-              this.permissionList = result.data;
-              console.info(this.permissionList)
-          })
-        }
+
+    methods:{
+      handleAfterPageList(result){
+        this.tableData = result.data;
+      },
+
     }
-  }
+  };
 
 </script>

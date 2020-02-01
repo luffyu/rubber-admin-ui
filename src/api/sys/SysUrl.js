@@ -32,6 +32,9 @@ const allUrl = {
     add:"/sys/permission-dict/add",
     edit:"/sys/permission-dict/%s/update",
     del:"/sys/permission-dict/%s/del",
+  },
+  sysPermission:{
+    pageList:"/sys/permission/list",
   }
 };
 

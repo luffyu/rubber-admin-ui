@@ -13,6 +13,24 @@
 
     <div class="container">
 
+      <div class="container-head ">
+        <el-button
+            type="button"
+            icon="el-icon-lx-add"
+            class="el-button-add"
+            @click="openAdd"
+        >新增</el-button>
+
+        <el-button
+            type="button"
+            icon="el-icon-lx-edit"
+            class="el-button-edit"
+            @click="openEditByRadio"
+        >修改</el-button>
+
+      </div>
+
+
       <el-table
           :data="tableData"
           border
@@ -25,16 +43,16 @@
         <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
         <el-table-column prop="dictKey" label="字典Key"></el-table-column>
         <el-table-column prop="dictName" label="字典名称"></el-table-column>
-        <el-table-column prop="dictValue" label="映射的key" width="200"></el-table-column>
+        <el-table-column prop="dictValue" label="字典值" width="200"></el-table-column>
         <el-table-column prop="dictType" label="字典类型"></el-table-column>
         <el-table-column prop="updateBy" label="修改人"></el-table-column>
         <el-table-column prop="updateTime" label="修改时间"></el-table-column>
 
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <el-tag
-                :type=" scope.row.state ==='0' ? 'success':'danger' "
-            >{{scope.row.status}}</el-tag>
+            <el-tag :type=" scope.row.status == '0' ? 'success':'danger' ">
+              <span >{{ normalShowStatus(scope.row.status) }}</span>
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -43,14 +61,9 @@
             <el-button
                 type="text"
                 icon="el-icon-edit"
-                @click="handleEdit(scope.$index, scope.row)"
+                @click="openEdit(scope.$index, scope.row)"
             >编辑</el-button>
-            <el-button
-                type="text"
-                icon="el-icon-delete"
-                class="red"
-                @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button>
+
           </template>
         </el-table-column>
       </el-table>
@@ -66,11 +79,46 @@
       </div>
     </div>
 
+
+    <!-- 编辑弹出框 -->
+    <el-dialog :title="addEditTitle"  :visible.sync="addEditVisible" :before-close='closeAddEdit' width="40%">
+      <el-form ref="form" :model="form" label-width="70px">
+        <el-form-item label="字典Key" >
+          <el-input v-model="form.dictKey"></el-input>
+        </el-form-item>
+        <el-form-item label="字典名称">
+          <el-input v-model="form.dictName"></el-input>
+        </el-form-item>
+        <el-form-item label="字典值" >
+          <el-input v-model="form.dictValue" ></el-input>
+        </el-form-item>
+
+        <el-form-item label="字典类型">
+          <el-input v-model="form.dictType" ></el-input>
+        </el-form-item>
+
+        <el-form-item label="状态">
+          <el-radio-group v-model="form.status">
+            <el-radio
+                v-for="dict in statusOptions"
+                :key="dict.dictValue"
+                :label="dict.dictValue"
+            >{{dict.dictLabel}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="closeAddEdit">取 消</el-button>
+          <el-button type="primary" @click="handleAddEdit(form.id)">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-  import BaseList from '@/components/BaseCurd.vue';
+  import BaseList from '@/components/BaseTableCurd.vue';
   import sysUrl from '@/api/sys/SysUrl';
   export default {
     extends: BaseList,

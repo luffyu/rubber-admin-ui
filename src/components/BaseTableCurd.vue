@@ -271,6 +271,7 @@
        */
       handleSelectionChange(val) {
         this.multipleSelection = val;
+        this.radioSelection = val[0];
       },
 
 

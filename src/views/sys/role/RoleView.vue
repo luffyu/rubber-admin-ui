@@ -57,9 +57,9 @@
 
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <el-tag
-                :type=" scope.row.state ==='0' ? 'success':'danger' "
-            >{{scope.row.status}}</el-tag>
+            <el-tag :type=" scope.row.status == '0' ? 'success':'danger' ">
+              <span >{{ normalShowStatus(scope.row.status) }}</span>
+            </el-tag>
           </template>
         </el-table-column>
 
