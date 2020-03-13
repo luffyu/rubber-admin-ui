@@ -56,7 +56,7 @@ export default {
         return {
             collapse: true,
             fullscreen: false,
-            name: 'linxin',
+            name: 'luffyu',
             message: 2
         };
     },

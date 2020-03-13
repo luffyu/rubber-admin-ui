@@ -105,25 +105,30 @@
 
 
     <!-- 编辑弹出框 -->
-    <el-dialog :title="addEditTitle"  :visible.sync="addEditVisible" :before-close='closeAddEdit' width="40%">
-      <el-form ref="form" :model="form" label-width="70px">
-        <el-form-item label="父菜单" prop="parentId">
+    <el-dialog :title="addEditTitle"  :visible.sync="addEditVisible" :before-close='closeAddEdit' width="70%" >
+      <el-form ref="form" :model="form" label-width="100px">
+        <el-form-item label="父菜单" prop="parentId" >
           <treeselect v-model="form.parentId" :multiple="false" :options="tableData" :normalizer="normalizer" />
+        </el-form-item>
+
+        <el-form-item label="菜单类型">
+          <el-radio-group v-model="form.menuType">
+            <el-radio
+                v-for="dict in menuTypes"
+                :key="dict.dictValue"
+                :label="dict.dictValue"
+            >{{dict.dictLabel}}</el-radio>
+          </el-radio-group>
         </el-form-item>
 
         <el-form-item label="名称">
           <el-input v-model="form.menuName"></el-input>
         </el-form-item>
 
-        <el-form-item label="类型">
-          <el-select v-model="form.menuType" placeholder="请选择类型">
-             <el-option v-for='(item, index) in options' :key='index' :label='item.label' :value='item.value'></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="请求">
+        <el-form-item label="请求" v-if="form.menuType === 'C' ">
           <el-input v-model="form.url" value="#"></el-input>
         </el-form-item>
+
 
         <el-form-item label="排序">
           <el-input-number v-model="form.seq" controls-position="right" :min="0" />
@@ -143,12 +148,40 @@
           </el-radio-group>
         </el-form-item>
 
+        <el-form-item label="所需权限" v-if="form.menuType === 'C'">
+          <el-tree
+              :data="groupAuthInfo"
+              show-checkbox
+              node-key="groupKey"
+              width="100px"
+              ref="authGroupTree"
+              :props="{children: 'mappingModels',  label: 'groupName'}">
+            <span class="custom-tree-node" slot-scope="{ node, data }">
+              <span>{{ node.label }}</span>
+              <span v-if="data.urls != undefined && data.urls != null && data.urls.length > 0">
+                <el-dropdown  trigger="click">
+                  <span class="el-dropdown-link onchange-url-span" >
+                    点击查看url <i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <div v-for="(item,index) in data.urls">
+                      <el-dropdown-item> {{item}}</el-dropdown-item>
+                    </div>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </span>
+            </span>
+          </el-tree>
+
+        </el-form-item>
+
       </el-form>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeAddEdit">取 消</el-button>
         <el-button type="primary" @click="handleAddEdit(form.menuId)">确 定</el-button>
       </span>
+
     </el-dialog>
   </div>
 </template>
@@ -156,26 +189,26 @@
 <script>
   import BaseList from '@/components/BaseTableCurd.vue';
   import sysUrl from '@/api/sys/SysUrl';
+  import request from '@/utils/request';
+  import global from '@/utils/Global';
+
 
   export default {
     extends: BaseList,
     data() {
       const data = BaseList.data();
       data.url = sysUrl.allUrl.sysMenu;
-      data.options=[
+      data.menuTypes=[
         {
-          label:"目录",
-          value:"M"
+          dictValue:"M",
+          dictLabel:'目录'
         },
         {
-          label:"菜单",
-          value:"C"
-        },
-        {
-          label:"按钮",
-          value:"B"
+          dictValue:"C",
+          dictLabel:'菜单'
         }
       ];
+      data.groupAuthInfo = [];
       return data
     },
 
@@ -193,6 +226,38 @@
           children: node.children,
         }
       },
+
+      afterOpenAddEdit(){
+        request({
+          url: global.rubberBasePath + sysUrl.allUrl.sysAuthorize.pageList,
+          method: 'get',
+        }).then(result => {
+          if(result.code === global.SUCCESS){
+            this.groupAuthInfo = result.data;
+            if (this.form.groupAuthMenu !== undefined && this.form.groupAuthMenu !==null){
+              this.$refs.authGroupTree.setCheckedKeys(this.form.groupAuthMenu);
+            }
+          }else {
+            global.handelRequestError(result);
+          }
+        })
+      },
+
+      //保存之前的操作
+      handleAddEdit(id) {
+        if (this.form.menuType === 'C'){
+          const groupAuthMenu = this.$refs.authGroupTree.getCheckedKeys();
+          if (groupAuthMenu !== undefined && groupAuthMenu !== null){
+            this.form.groupAuthMenu = groupAuthMenu;
+          }
+        }
+        if(this.addEditType === 'add'){
+          this.handleAdd();
+        }else if(this.addEditType === 'edit'){
+          this.handleEdit(id);
+        }
+      },
+      //设置选中的时间
     }
   };
 </script>
@@ -237,6 +302,20 @@
   }
   .blue{
     color: #2442ff;
+  }
+
+  .onchange-url-span{
+    font-size: 10px;
+    color: #008000;
+  }
+
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
   }
 
 </style>

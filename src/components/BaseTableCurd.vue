@@ -103,7 +103,7 @@
           if (global.SUCCESS === result.code){
             this.handleAfterPageList(result);
           }else {
-            this.$message.error(result.msg);
+            global.handelRequestError(result);
           }
         })
       },
@@ -171,6 +171,7 @@
         this.addEditVisible = true;
         this.addEditType = 'edit';
         this.addEditTitle = '编辑';
+        this.afterOpenAddEdit();
       },
 
       /**
@@ -196,7 +197,7 @@
             this.closeAddEdit();
             this.getPageList();
           }else {
-            this.$message.error(result.msg);
+            global.handelRequestError(result);
           }
         })
       },
@@ -211,6 +212,7 @@
         this.addEditVisible = true;
         this.addEditType = 'add';
         this.addEditTitle = '新增';
+        this.afterOpenAddEdit();
       },
 
       /**
@@ -227,7 +229,7 @@
             this.closeAddEdit();
             this.getPageList();
           }else {
-            this.$message.error(result.msg);
+            global.handelRequestError(result);
           }
         })
       },
@@ -238,6 +240,13 @@
         return form;
       },
 
+
+      /**
+       * 打开编辑/新增框之后的统一操作
+       */
+      afterOpenAddEdit(){
+
+      },
 
 
       /**
@@ -259,7 +268,7 @@
               this.closeAddEdit();
               this.getPageList();
             }else {
-              this.$message.error(result.msg);
+              global.handelRequestError(result);
             }
           })
         }).catch(() => {});

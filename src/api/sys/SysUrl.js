@@ -35,6 +35,9 @@ const allUrl = {
   },
   sysPermission:{
     pageList:"/sys/permission/list",
+  },
+  sysAuthorize:{
+    pageList:"/auth/group/list",
   }
 };
 

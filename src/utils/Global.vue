@@ -17,6 +17,7 @@
     rubberBasePath,
     SUCCESS,
     checkLoginFlag,
+    handelRequestError
   }
 
   /**
@@ -29,5 +30,9 @@
       return false;
     }
     return true;
+  }
+
+  export function handelRequestError(result) {
+    this.$message.error(result.msg);
   }
 </script>

@@ -49,6 +49,11 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/permission/PermissionView'),
                     meta: { title: '权限字典' }
                 },
+                {
+                    path: '/sys/authorize-view',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/authorize/AuthorizeView'),
+                    meta: { title: '权限信息-v1' }
+                },
 
                 {
                     path: '/dashboard',
