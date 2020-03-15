@@ -18,8 +18,10 @@ const allUrl = {
   sysMenu:{
     pageList:"/sys/menu/tree",
     add:"/sys/menu/add",
-    edit:"/sys/menu/%s/update",
-    del:"/sys/menu/%s/del",
+    edit:"/sys/menu/update/%s",
+    del:"/sys/menu/del/%s",
+    info:"/sys/menu/info/%s",
+    optionTree:"/sys/menu/option-tree",
   },
   sysDept:{
     pageList:"/sys/dept/tree",
@@ -33,11 +35,9 @@ const allUrl = {
     edit:"/sys/permission-dict/%s/update",
     del:"/sys/permission-dict/%s/del",
   },
-  sysPermission:{
-    pageList:"/sys/permission/list",
-  },
   sysAuthorize:{
-    pageList:"/auth/group/list",
+    pageList:"/auth/group/apply-tree",
+    optionTree:"/auth/group/option-tree",
   }
 };
 

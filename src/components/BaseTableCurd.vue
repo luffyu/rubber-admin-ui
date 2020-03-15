@@ -303,7 +303,7 @@
       rowClick(row, column) {
         const selectData = this.radioSelection
         this.$refs.multipleTable.clearSelection()
-        if( selectData.length == 1 ) {
+        if(selectData!==undefined && selectData !== null && selectData.length === 1 ) {
           selectData.forEach(item => {
             // 判断 如果当前的一行被勾选, 再次点击的时候就会取消选中
             if (item == row) {

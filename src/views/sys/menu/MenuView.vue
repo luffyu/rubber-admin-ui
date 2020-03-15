@@ -150,21 +150,21 @@
 
         <el-form-item label="所需权限" v-if="form.menuType === 'C'">
           <el-tree
-              :data="groupAuthInfo"
+              :data="authOptionGroup"
               show-checkbox
-              node-key="groupKey"
+              node-key="key"
               width="100px"
-              ref="authGroupTree"
-              :props="{children: 'mappingModels',  label: 'groupName'}">
+              ref="authOptionGroup"
+              :props="{children: 'children',  label: 'label'}">
             <span class="custom-tree-node" slot-scope="{ node, data }">
               <span>{{ node.label }}</span>
-              <span v-if="data.urls != undefined && data.urls != null && data.urls.length > 0">
+              <span v-if="data.requestUrl != undefined && data.requestUrl != null && data.requestUrl.length > 0">
                 <el-dropdown  trigger="click">
                   <span class="el-dropdown-link onchange-url-span" >
                     点击查看url <i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <div v-for="(item,index) in data.urls">
+                    <div v-for="(item,index) in data.requestUrl">
                       <el-dropdown-item> {{item}}</el-dropdown-item>
                     </div>
                   </el-dropdown-menu>
@@ -208,15 +208,14 @@
           dictLabel:'菜单'
         }
       ];
-      data.groupAuthInfo = [];
+      data.authOptionGroup = [];
       return data
     },
 
     methods:{
       handleAfterPageList(result){
-        const list =  result.data;
-        this.tableData = list.children;
-        this.pageTotal = list.total;
+        this.tableData = result.data;
+        this.pageTotal = this.tableData === undefined ? 0 : this.tableData.length;
       },
 
       normalizer(node) {
@@ -229,13 +228,13 @@
 
       afterOpenAddEdit(){
         request({
-          url: global.rubberBasePath + sysUrl.allUrl.sysAuthorize.pageList,
+          url: global.rubberBasePath + sysUrl.allUrl.sysAuthorize.optionTree,
           method: 'get',
         }).then(result => {
           if(result.code === global.SUCCESS){
-            this.groupAuthInfo = result.data;
-            if (this.form.groupAuthMenu !== undefined && this.form.groupAuthMenu !==null){
-              this.$refs.authGroupTree.setCheckedKeys(this.form.groupAuthMenu);
+            this.authOptionGroup = result.data;
+            if (this.form.menuOptionGroup !== undefined && this.form.menuOptionGroup !==null){
+              this.$refs.authOptionGroup.setCheckedKeys(this.form.menuOptionGroup);
             }
           }else {
             global.handelRequestError(result);
@@ -246,9 +245,9 @@
       //保存之前的操作
       handleAddEdit(id) {
         if (this.form.menuType === 'C'){
-          const groupAuthMenu = this.$refs.authGroupTree.getCheckedKeys();
+          const groupAuthMenu = this.$refs.authOptionGroup.getCheckedKeys();
           if (groupAuthMenu !== undefined && groupAuthMenu !== null){
-            this.form.groupAuthMenu = groupAuthMenu;
+            this.form.menuOptionGroup = groupAuthMenu;
           }
         }
         if(this.addEditType === 'add'){
@@ -257,7 +256,38 @@
           this.handleEdit(id);
         }
       },
-      //设置选中的时间
+
+      /**
+       * 打开编辑页面
+       * @param index
+       * @param row
+       */
+      openEdit(index, row) {
+        const infoUrl = this.url.info.replace("%s",row.menuId);
+        request({
+          url: global.rubberBasePath + infoUrl,
+          method: 'get',
+          params: {
+            'id':encodeURI(JSON.stringify(this.query))
+          }
+        }).then(result => {
+          if(result.code === global.SUCCESS){
+            this.rowIndex = index;
+            this.form = result.data;
+            this.radioSelection = row;
+
+            this.addEditVisible = true;
+            this.addEditType = 'edit';
+            this.addEditTitle = '编辑';
+            this.afterOpenAddEdit();
+
+          }else {
+            global.handelRequestError(result);
+          }
+        })
+
+
+      },
     }
   };
 </script>

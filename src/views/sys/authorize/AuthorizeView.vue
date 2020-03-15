@@ -8,39 +8,29 @@
         :data="tableData"
         border
         class="table"
-        row-key="groupKey"
+        row-key="key"
         ref="multipleTable"
         highlight-current-row
         header-cell-class-name="table-header"
-        :tree-props="{children: 'mappingModels', hasChildren: 'hasChildren'}"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
 
-      <el-table-column prop="groupKey" label="权限key"  ></el-table-column>
-      <el-table-column prop="groupName" label="权限名称" ></el-table-column>
-      <el-table-column prop="members" label="关联的值" >
-        <template slot-scope="scope">
-          <span v-for="(item,index) in scope.row.members">
-            <span v-if="index != 0">,</span>
-            {{item}}
-          </span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="key" label="权限key" ></el-table-column>
+      <el-table-column prop="label" label="权限名称" ></el-table-column>
+      <el-table-column prop="members" label="关联的值" ></el-table-column>
       <el-table-column prop="urls" label="相关请求" >
-
         <template slot-scope="scope" >
             <el-dropdown>
               <span class="el-dropdown-link" >查看url</span>
               <el-dropdown-menu slot="dropdown">
-                <div v-for="(item,index) in scope.row.urls">
+                <div v-for="(item,index) in scope.row.requestUrl">
                   <el-dropdown-item> {{item}}</el-dropdown-item>
                 </div>
               </el-dropdown-menu>
             </el-dropdown>
         </template>
-
       </el-table-column>
     </el-table>
-
 
   </div>
 

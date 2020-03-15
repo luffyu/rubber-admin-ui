@@ -120,12 +120,19 @@
           <el-input v-model="form.remark"></el-input>
         </el-form-item>
         <el-form-item label="权限">
-
+          <el-tree
+              :data="menuOptionTree"
+              show-checkbox
+              node-key="key"
+              width="100px"
+              ref="menuOptionTree"
+              :props="{children: 'children',  label: 'label'}">
+          </el-tree>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
           <el-button @click="closeAddEdit">取 消</el-button>
-          <el-button type="primary" @click="handleAddEdit(form.menuId)">确 定</el-button>
+          <el-button type="primary" @click="handleAddEdit(form.roleId)">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -135,6 +142,10 @@
 <script>
   import BaseList from '@/components/BaseTableCurd.vue';
   import sysUrl from '@/api/sys/SysUrl';
+  import request from '@/utils/request';
+  import global from '@/utils/Global';
+
+
   export default {
     extends: BaseList,
     data() {
@@ -149,9 +160,44 @@
           dictValue:-1,
           dictLabel:'异常'
         }
-      ]
+      ];
+      data.menuOptionTree = [];
       return data
     },
+    methods:{
+
+
+      //保存之前的操作
+      handleAddEdit(id) {
+        const roleMenuOptions = this.$refs.menuOptionTree.getCheckedKeys();
+        if (roleMenuOptions !== undefined && roleMenuOptions !== null){
+          this.form.roleMenuOptions = roleMenuOptions;
+        }
+        if(this.addEditType === 'add'){
+          this.handleAdd();
+        }else if(this.addEditType === 'edit'){
+          this.handleEdit(id);
+        }
+      },
+
+
+
+
+
+      afterOpenAddEdit(){
+        request({
+          url: global.rubberBasePath + sysUrl.allUrl.sysMenu.optionTree,
+          method: 'get',
+        }).then(result => {
+          if(result.code === global.SUCCESS){
+            this.menuOptionTree = result.data;
+          }else {
+            global.handelRequestError(result);
+          }
+        })
+      },
+
+    }
   };
 </script>
 
