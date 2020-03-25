@@ -38,6 +38,13 @@ const allUrl = {
   sysAuthorize:{
     pageList:"/auth/group/apply-tree",
     optionTree:"/auth/group/option-tree",
+  },
+  sysAuthorizeConfig:{
+    viewInfo:"/auth/config/view-info",
+    pageList:"/auth/config/list",
+    add:"/auth/config/add",
+    edit:"/auth/config/%s/update",
+    del:"/auth/config/%s/del",
   }
 };
 

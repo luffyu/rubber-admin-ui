@@ -49,7 +49,11 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/authorize/AuthorizeView'),
                     meta: { title: '权限信息-v1' }
                 },
-
+                {
+                    path: '/sys/authorize-config',
+                    component: () => import(/* webpackChunkName: "welcome" */ '../views/sys/authorize/AuthorizeConfigView'),
+                    meta: { title: '权限配置' }
+                },
                 {
                     path: '/dashboard',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
