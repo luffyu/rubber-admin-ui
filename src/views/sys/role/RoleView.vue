@@ -48,12 +48,11 @@
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="roleId" label="ID" width="55" align="center"></el-table-column>
         <el-table-column prop="roleName" label="角色"></el-table-column>
-        <el-table-column prop="roleKey" label="角色Key值"></el-table-column>
         <el-table-column prop="seq" label="排序"></el-table-column>
         <el-table-column prop="createBy" label="创建人"></el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="150" ></el-table-column>
-        <el-table-column prop="updateBy" label="创建人"  ></el-table-column>
-        <el-table-column prop="updateTime" label="创建时间" width="150"></el-table-column>
+        <el-table-column prop="updateBy" label="更新人"  ></el-table-column>
+        <el-table-column prop="updateTime" label="更新时间" width="150"></el-table-column>
 
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
@@ -96,9 +95,6 @@
     <!-- 编辑弹出框 -->
     <el-dialog :title="addEditTitle"  :visible.sync="addEditVisible" :before-close='closeAddEdit' width="40%">
       <el-form ref="form" :model="form" label-width="70px">
-        <el-form-item label="角色Key">
-          <el-input v-model="form.roleKey"></el-input>
-        </el-form-item>
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName"></el-input>
         </el-form-item>
