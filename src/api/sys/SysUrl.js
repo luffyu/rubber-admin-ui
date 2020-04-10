@@ -6,8 +6,9 @@ const allUrl = {
   sysRole:{
     pageList:"/sys/role/list",
     add:"/sys/role/add",
-    edit:"/sys/role/%s/update",
-    del:"/sys/role/%s/del",
+    edit:"/sys/role/update/%s",
+    del:"/sys/role/del/%s",
+    info:"/sys/role/info/%s",
   },
   sysUser:{
     pageList:"/sys/user/list",

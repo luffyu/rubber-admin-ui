@@ -166,7 +166,15 @@
       //保存之前的操作
       handleAddEdit(id) {
         const roleMenuOptions = this.$refs.menuOptionTree.getCheckedKeys();
+        const  halfCheckedKeys = this.$refs.menuOptionTree.getHalfCheckedKeys();
         if (roleMenuOptions !== undefined && roleMenuOptions !== null){
+          if (halfCheckedKeys != undefined){
+              for (const data in halfCheckedKeys){
+                if (data !== "0"){
+                  roleMenuOptions.push(data);
+                }
+              }
+          }
           this.form.roleMenuOptions = roleMenuOptions;
         }
         if(this.addEditType === 'add'){
@@ -177,7 +185,29 @@
       },
 
 
+      openEdit(index, row) {
 
+        const infoUrl = this.url.info.replace("%s",row.roleId);
+        request({
+          url: global.rubberBasePath + infoUrl,
+          method: 'get',
+          params: {
+            'id':encodeURI(JSON.stringify(this.query))
+          }
+        }).then(result => {
+          if (result.code === global.SUCCESS) {
+            this.rowIndex = index;
+            this.form = result.data;
+            this.radioSelection = row;
+            this.addEditVisible = true;
+            this.addEditType = 'edit';
+            this.addEditTitle = '编辑';
+            this.afterOpenAddEdit();
+          } else {
+            global.handelRequestError(result);
+          }
+        });
+      },
 
 
       afterOpenAddEdit(){
@@ -187,6 +217,7 @@
         }).then(result => {
           if(result.code === global.SUCCESS){
             this.menuOptionTree = result.data;
+            this.$refs.menuOptionTree.setCheckedKeys(this.form.roleMenuOptions);
           }else {
             global.handelRequestError(result);
           }
