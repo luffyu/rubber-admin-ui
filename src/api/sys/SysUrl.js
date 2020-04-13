@@ -27,14 +27,8 @@ const allUrl = {
   sysDept:{
     pageList:"/sys/dept/tree",
     add:"/sys/dept/add",
-    edit:"/sys/dept/%s/update",
-    del:"/sys/dept/%s/del",
-  },
-  sysPermissionDict:{
-    pageList:"/sys/permission-dict/list",
-    add:"/sys/permission-dict/add",
-    edit:"/sys/permission-dict/%s/update",
-    del:"/sys/permission-dict/%s/del",
+    edit:"/sys/dept/update/%s",
+    del:"/sys/dept/del/%s",
   },
   sysAuthorize:{
     pageList:"/auth/group/apply-tree",

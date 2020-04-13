@@ -108,7 +108,7 @@
     <el-dialog :title="addEditTitle"  :visible.sync="addEditVisible" :before-close='closeAddEdit' width="70%" >
       <el-form ref="form" :model="form" label-width="100px">
         <el-form-item label="父菜单" prop="parentId" >
-          <treeselect v-model="form.parentId" :multiple="false" :options="tableData" :normalizer="normalizer" />
+          <treeselect v-model="form.parentId" :multiple="false" :options="selectRootMenus" :normalizer="normalizer" />
         </el-form-item>
 
         <el-form-item label="菜单类型">
@@ -209,12 +209,16 @@
         }
       ];
       data.authOptionGroup = [];
+      data.selectRootMenus = [];
       return data
     },
 
     methods:{
       handleAfterPageList(result){
-        this.tableData = result.data;
+        this.tableData = result.data.children;
+        const canSelectRootMenus = [];
+        canSelectRootMenus.push(result.data);
+        this.selectRootMenus = canSelectRootMenus;
         this.pageTotal = this.tableData === undefined ? 0 : this.tableData.length;
       },
 

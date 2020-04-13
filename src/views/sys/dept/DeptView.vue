@@ -103,7 +103,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
 
           <el-form-item label="上级部门" prop="parentId">
-            <treeselect v-model="form.parentId" :multiple="false" :options="tableData" :normalizer="normalizer" />
+            <treeselect v-model="form.parentId" :multiple="false" :options="selectDeptTree" :normalizer="normalizer" />
           </el-form-item>
 
           <el-form-item label="部门名称" prop="deptName">
@@ -144,11 +144,15 @@
     data() {
       const data = BaseList.data();
       data.url = sysUrl.allUrl.sysDept;
+      data.selectDeptTree = [];
       return data
     },
     methods: {
       handleAfterPageList(result) {
-        this.tableData = result.data;
+        this.tableData = result.data.children;
+        const originSelectDeptTree = [];
+        originSelectDeptTree.push(result.data);
+        this.selectDeptTree = originSelectDeptTree;
       },
 
       //selecttree 自定义属性名称
