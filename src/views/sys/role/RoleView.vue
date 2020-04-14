@@ -204,7 +204,7 @@
             this.addEditTitle = '编辑';
             this.afterOpenAddEdit();
           } else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         });
       },
@@ -219,7 +219,7 @@
             this.menuOptionTree = result.data;
             this.$refs.menuOptionTree.setCheckedKeys(this.form.roleMenuOptions);
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
       },

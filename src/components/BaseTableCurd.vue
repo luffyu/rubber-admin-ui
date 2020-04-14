@@ -112,9 +112,13 @@
           if (global.SUCCESS === result.code){
             this.handleAfterPageList(result);
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
+      },
+
+      handelRequestError(result) {
+        this.$message.error(result.msg);
       },
       /**
        * 处理消息返回体
@@ -206,7 +210,7 @@
             this.closeAddEdit();
             this.getPageList();
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
       },
@@ -238,7 +242,7 @@
             this.closeAddEdit();
             this.getPageList();
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
       },
@@ -277,7 +281,7 @@
               this.closeAddEdit();
               this.getPageList();
             }else {
-              global.handelRequestError(result);
+              this.handelRequestError(result);
             }
           })
         }).catch(() => {});

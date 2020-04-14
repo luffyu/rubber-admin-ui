@@ -165,7 +165,7 @@
             this.getSelectModels(defaultType);
             this.getPageList();
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
       },

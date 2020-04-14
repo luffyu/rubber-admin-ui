@@ -241,7 +241,7 @@
               this.$refs.authOptionGroup.setCheckedKeys(this.form.menuOptionGroup);
             }
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
       },
@@ -286,7 +286,7 @@
             this.afterOpenAddEdit();
 
           }else {
-            global.handelRequestError(result);
+            this.handelRequestError(result);
           }
         })
 
