@@ -95,7 +95,13 @@
           <el-input v-model="form.groupName"></el-input>
         </el-form-item>
         <el-form-item label="类型">
-          <el-input v-model="form.groupType"></el-input>
+          <el-radio-group v-model="form.groupType">
+            <el-radio
+                v-for="dict in groupTypeOption"
+                :key="dict.type"
+                :label="dict.type"
+            >{{dict.label}}</el-radio>
+          </el-radio-group>
         </el-form-item>
 
         <el-form-item label="关联值">
@@ -114,7 +120,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
           <el-button @click="closeAddEdit">取 消</el-button>
-          <el-button type="primary" @click="handleAddEdit(form.roleId)">确 定</el-button>
+          <el-button type="primary" @click="handleAddEdit(form.groupId)">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -137,7 +143,17 @@
       data.groupTypeInfo = {
           defaultType:"",
           typeInfo:[]
-      }
+      };
+      data.groupTypeOption = [
+        {
+          type:'option',
+          label:'基础操作'
+        },
+        {
+          type:'apply',
+          label:'业务类型'
+        }
+      ]
       return data
     },
 
