@@ -3,49 +3,53 @@
         <el-menu
             class="sidebar-el-menu"
             :default-active="onRoutes"
-            :collapse="collapse"
             background-color="#324157"
-            text-color="#bfcbd9"
             active-text-color="#20a0ff"
+            text-color="#fff"
             unique-opened
             router
-        >
-            <template v-for="item in sysMenu">
-                <template v-if="item.children && item.children.length > 0 ">
-                    <el-submenu :index="item.url" :key="item.seq">
-                        <template slot="title">
-                            <i :class="item.icon"></i>
-                            <span slot="title">{{ item.menuName }}</span>
-                        </template>
-                        <template v-for="subItem in item.children">
-                            <el-submenu
-                                v-if="subItem.children && subItem.children.length > 0"
-                                :index="subItem.url"
-                                :key="subItem.seq"
-                            >
-                                <template slot="title">{{ subItem.menuName }}</template>
-                                <el-menu-item
-                                    v-for="(threeItem,i) in subItem.children"
-                                    :key="i"
-                                    :index="threeItem.url"
-                                >{{ threeItem.menuName }}</el-menu-item>
-                            </el-submenu>
-                            <el-menu-item
-                                v-else
-                                :index="subItem.url"
-                                :key="subItem.seq"
-                            >{{ subItem.menuName }}</el-menu-item>
-                        </template>
-                    </el-submenu>
-                </template>
-                <template v-else>
-                    <el-menu-item :index="item.url" :key="item.seq">
-                        <i :class="item.icon"></i>
-                        <span slot="title">{{ item.menuName }}</span>
-                    </el-menu-item>
-                </template>
+
+            @open="handleOpen"
+            @close="handleClose"
+            :collapse="collapse">
+
+            <template v-for="(menu,index) in sysMenu">
+                <el-submenu v-if="menu.children && menu.children.length > 0"
+                            :index="index">
+                    <template slot="title">
+                        <i :class="menu.icon"></i>
+                        <span>{{ menu.menuName }}</span>
+                    </template>
+                    <template v-for="(cMenu,cIndex) in menu.children">
+
+                        <el-submenu v-if="cMenu.children && cMenu.children.length > 0">
+                            <template slot="title">
+                                <i :class="cMenu.icon"></i>
+                                <span>{{ cMenu.menuName }}</span>
+                            </template>
+                            <el-menu-item  v-for="(ccMenu,ccIndex) in cMenu.children"
+                                           :index="ccMenu.url"
+                                           :key="ccMenu.seq">
+                                <i :class="ccMenu.icon"></i>
+                                <span slot="title">{{ ccMenu.menuName }}</span>
+                            </el-menu-item>
+                        </el-submenu>
+                        <el-menu-item  v-else
+                                      :index="cMenu.url"
+                                      :key="cMenu.seq">
+                            <i :class="cMenu.icon"></i>
+                            <span slot="title">{{ cMenu.menuName }}</span>
+                        </el-menu-item>
+                    </template>
+                </el-submenu>
+                <el-menu-item   v-else :index="menu.url" :key="menu.seq">
+                    <i :class="menu.icon"></i>
+                    <span slot="title">{{ menu.menuName }}</span>
+                </el-menu-item>
             </template>
+
         </el-menu>
+
     </div>
 </template>
 
@@ -101,6 +105,14 @@ export default {
             }
         });
     },
+    methods:{
+        handleOpen(key, keyPath) {
+            console.log(key, keyPath);
+        },
+        handleClose(key, keyPath) {
+            console.log(key, keyPath);
+        }
+    }
 
 };
 </script>
