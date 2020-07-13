@@ -13,8 +13,8 @@ const allUrl = {
   sysUser:{
     pageList:"/sys/user/list",
     add:"/sys/user/add",
-    edit:"/sys/user/%s/update",
-    del:"/sys/user/%s/del",
+    edit:"/sys/user/update/%s",
+    del:"/sys/user/del/%s",
   },
   sysMenu:{
     pageList:"/sys/menu/tree",

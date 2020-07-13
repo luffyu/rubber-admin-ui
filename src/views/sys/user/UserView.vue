@@ -33,7 +33,7 @@
             type="button"
             icon="el-icon-lx-delete"
             class="el-button-delete"
-            @click="openAdd"
+            @click="handleDelete(scope.row.roleId, scope.row)"
         >删除</el-button>
 
       </div>
@@ -278,10 +278,12 @@
       },
 
       getDeptAndRole(){
-        const roleListParam = this.query;
-        roleListParam.size = 1000;
-        roleListParam.selectModels.push({field:'status',type:'eq',data:0});
-
+        let roleListParam =
+            {
+              page:1,
+              size:1000,
+              selectModels:[{field:'status',type:'eq',data:0}]
+            }
         UserApi.getRoleList(roleListParam).then(result =>{
           if (global.SUCCESS === result.code){
               this.roleList = result.data.records;
@@ -290,7 +292,7 @@
 
         UserApi.getDeptTree().then(result =>{
           if (global.SUCCESS === result.code){
-            this.deptTree = result.data;
+            this.deptTree = result.data.children;
           }
         })
       },

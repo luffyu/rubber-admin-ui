@@ -15,14 +15,14 @@
 
             <template v-for="(menu,index) in sysMenu">
                 <el-submenu v-if="menu.children && menu.children.length > 0"
-                            :index="index">
+                            :index="menu.url+ menu.menuId">
                     <template slot="title">
                         <i :class="menu.icon"></i>
                         <span>{{ menu.menuName }}</span>
                     </template>
                     <template v-for="(cMenu,cIndex) in menu.children">
 
-                        <el-submenu v-if="cMenu.children && cMenu.children.length > 0">
+                        <el-submenu v-if="cMenu.children && cMenu.children.length > 0" :index="cMenu.url + cMenu.menuId">
                             <template slot="title">
                                 <i :class="cMenu.icon"></i>
                                 <span>{{ cMenu.menuName }}</span>
