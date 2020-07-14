@@ -1,7 +1,6 @@
 <script>
   import request from '@/utils/request';
   import global from '@/utils/Global';
-  import sysUrl from '@/api/sys/SysUrl';
   import Treeselect from "@riophae/vue-treeselect";
   import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -118,7 +117,7 @@
       },
 
       handelRequestError(result) {
-        this.$message.error(result.msg);
+        global.handelRequestError(result);
       },
       /**
        * 处理消息返回体

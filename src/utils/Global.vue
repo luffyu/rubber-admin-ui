@@ -1,10 +1,16 @@
 <script>
+  import { Message } from "element-ui";
+
+
   //rubber后台的全局地址
   const rubberBasePath = '/rubber';
 
 
   //请求成功的code
   const SUCCESS = '10100';
+
+  //没有权限的code
+  const AUTH_ERROR = '10200';
   //用户没有登陆
   const USER_NOT_LOGIN = '20100';
   //登陆的token过期
@@ -32,7 +38,13 @@
     return true;
   }
 
+
   export function handelRequestError(result) {
-    this.$message.error(result.msg);
+    console.info(">>>>>>"+result.code)
+    if(result.code === AUTH_ERROR){
+      Message.error("没有此操作权限");
+    }else {
+      Message.error(result.msg);
+    }
   }
 </script>

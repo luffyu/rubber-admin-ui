@@ -69,7 +69,7 @@
           if (global.SUCCESS === result.code){
             this.handleAfterPageList(result);
           }else {
-            this.$message.error(result.msg);
+            global.handelRequestError(result);
           }
         })
       },
@@ -137,7 +137,7 @@
             this.form={};
             this.getPageList();
           }else {
-            this.$message.error(result.msg);
+            global.handelRequestError(result);
           }
         })
       },
@@ -183,7 +183,7 @@
             this.form={};
             this.getPageList();
           }else {
-            this.$message.error(result.msg);
+            global.handelRequestError(result);
           }
         })
       },
@@ -214,7 +214,7 @@
               this.$message.success(`删除成功`);
               this.getPageList();
             }else {
-              this.$message.error(result.msg);
+              global.handelRequestError(result);
             }
           })
         }).catch(() => {});
